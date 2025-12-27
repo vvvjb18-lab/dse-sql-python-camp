@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>题库练习 - SQL训练营</title>
+    <title data-i18n-key="practice.title">題庫練習 - SQL 訓練營</title>
+    <script src="lang.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
@@ -296,7 +297,15 @@
                     <span class="ml-4 text-sm text-gray-300">题库练习</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="showHome()" class="btn-secondary px-4 py-2 text-sm">返回首页</button>
+                    <button onclick="showHome()" class="btn-secondary px-4 py-2 text-sm" data-i18n-key="common.back">返回首頁</button>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-gray-400" data-i18n-key="lang.label">語言</span>
+                        <select id="lang-switcher" class="bg-slate-800/70 border border-slate-600 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                            <option value="zh-Hant" data-i18n-key="lang.zhTW">繁體</option>
+                            <option value="zh-Hans" data-i18n-key="lang.zhCN">簡體</option>
+                            <option value="en" data-i18n-key="lang.en">English</option>
+                        </select>
+                    </div>
                     <div class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center">
                         <span class="text-white text-sm font-bold">SQL</span>
                     </div>
@@ -310,9 +319,9 @@
         <!-- 头部区域 -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold gradient-text mb-4">题库练习</h2>
-                <p class="text-gray-300 max-w-2xl mx-auto">
-                    从基础查询到高级优化，循序渐进掌握SQL技能。所有题目均来自真实考试题库，包含详细解析。
+                <h2 class="text-3xl font-bold gradient-text mb-4" data-i18n-key="practice.title">題庫練習</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto" data-i18n-key="practice.subtitle">
+                    透過實際練習掌握 SQL 語法
                 </p>
             </div>
             
@@ -320,19 +329,19 @@
             <div class="stats-grid mb-8">
                 <div class="stat-card">
                     <div class="text-2xl font-bold gradient-text" id="total-questions">35</div>
-                    <div class="text-sm text-gray-300 mt-1">总题目数</div>
+                    <div class="text-sm text-gray-300 mt-1" data-i18n-key="practice.stats.total">總題目數</div>
                 </div>
                 <div class="stat-card">
                     <div class="text-2xl font-bold gradient-text" id="completed-questions">0</div>
-                    <div class="text-sm text-gray-300 mt-1">已完成</div>
+                    <div class="text-sm text-gray-300 mt-1" data-i18n-key="progress.stats.completed">已完成</div>
                 </div>
                 <div class="stat-card">
                     <div class="text-2xl font-bold gradient-text" id="accuracy-rate">0%</div>
-                    <div class="text-sm text-gray-300 mt-1">正确率</div>
+                    <div class="text-sm text-gray-300 mt-1" data-i18n-key="practice.stats.accuracy">正確率</div>
                 </div>
                 <div class="stat-card">
                     <div class="text-2xl font-bold gradient-text" id="total-points">500</div>
-                    <div class="text-sm text-gray-300 mt-1">总积分</div>
+                    <div class="text-sm text-gray-300 mt-1" data-i18n-key="profile.stats.totalScore">總積分</div>
                 </div>
             </div>
         </div>
@@ -340,22 +349,22 @@
         <!-- 难度选择 -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
             <div class="glass-card p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">选择难度</h3>
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n-key="practice.selectDifficulty">選擇難度</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('beginner')" id="btn-beginner">
-                        <div class="font-semibold text-lg mb-1">初级</div>
-                        <div class="text-sm text-gray-400">基础查询</div>
-                        <div class="text-xs text-gray-500 mt-1">5-10分/题</div>
+                        <div class="font-semibold text-lg mb-1" data-i18n-key="practice.difficulty.easy">簡單</div>
+                        <div class="text-sm text-gray-400" data-i18n-key="practice.difficulty.easy.desc">基礎查詢</div>
+                        <div class="text-xs text-gray-500 mt-1">5-10分/題</div>
                     </button>
                     <button class="difficulty-btn btn-secondary py-4 text-center active" onclick="selectDifficulty('intermediate')" id="btn-intermediate">
-                        <div class="font-semibold text-lg mb-1">中级</div>
-                        <div class="text-sm text-gray-400">复杂查询</div>
-                        <div class="text-xs text-gray-500 mt-1">20-30分/题</div>
+                        <div class="font-semibold text-lg mb-1" data-i18n-key="practice.difficulty.medium">中等</div>
+                        <div class="text-sm text-gray-400" data-i18n-key="practice.difficulty.medium.desc">複雜查詢</div>
+                        <div class="text-xs text-gray-500 mt-1">20-30分/題</div>
                     </button>
                     <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('advanced')" id="btn-advanced">
-                        <div class="font-semibold text-lg mb-1">高级</div>
-                        <div class="text-sm text-gray-400">优化技巧</div>
-                        <div class="text-xs text-gray-500 mt-1">35-45分/题</div>
+                        <div class="font-semibold text-lg mb-1" data-i18n-key="practice.difficulty.hard">困難</div>
+                        <div class="text-sm text-gray-400" data-i18n-key="practice.difficulty.hard.desc">優化技巧</div>
+                        <div class="text-xs text-gray-500 mt-1">35-45分/題</div>
                     </button>
                 </div>
             </div>
@@ -364,10 +373,10 @@
         <!-- 题目列表 -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-semibold text-white">题目列表</h3>
+                <h3 class="text-xl font-semibold text-white" data-i18n-key="practice.questionList">題目列表</h3>
                 <div class="flex items-center space-x-4">
                     <select id="exercise-filter" class="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" onchange="filterByExercise()">
-                        <option value="">所有练习</option>
+                        <option value="" data-i18n-key="practice.allExercises">所有練習</option>
                         <option value="16">练习16 - JOIN Tables</option>
                         <option value="17">练习17 - INTERSECT & MINUS</option>
                         <option value="18">练习18 - Natural JOIN</option>

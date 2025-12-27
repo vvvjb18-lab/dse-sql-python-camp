@@ -369,8 +369,8 @@
                     <div class="hidden md:flex items-center space-x-2 text-xs text-slate-300">
                         <span data-i18n-key="lang.label">語言</span>
                         <select id="lang-switcher" class="bg-slate-800/70 border border-slate-600 rounded px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-sky-500">
-                            <option value="zh-TW" data-i18n-key="lang.zhTW">繁體</option>
-                            <option value="zh-CN" data-i18n-key="lang.zhCN">簡體</option>
+                            <option value="zh-Hant" data-i18n-key="lang.zhTW">繁體</option>
+                            <option value="zh-Hans" data-i18n-key="lang.zhCN">簡體</option>
                             <option value="en" data-i18n-key="lang.en">English</option>
                         </select>
                     </div>
@@ -765,6 +765,52 @@ result = <span class="function">binary_search</span>(numbers, <span class="numbe
     <!-- 底部 -->
     <footer class="bg-slate-900/50 border-t border-white/10 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-semibold mb-4" data-i18n-key="footer.about">關於我們</h3>
+                    <p class="text-gray-400 text-sm mb-4" data-i18n-key="home.description">
+                        從零開始學習 SQL 和 Python，透過互動式練習和 AI 智能助手，快速提升你的程式設計能力。
+                    </p>
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm" data-i18n-key="footer.github">
+                        開源專案
+                    </a>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-4" data-i18n-key="nav.guide">學習指南</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="guide.html" class="text-gray-400 hover:text-sky-400" data-i18n-key="nav.guide">學習指南</a></li>
+                        <li><a href="practice.html" class="text-gray-400 hover:text-sky-400" data-i18n-key="nav.practice">題庫練習</a></li>
+                        <li><a href="interactive.html" class="text-gray-400 hover:text-sky-400" data-i18n-key="nav.interactive">互動練習</a></li>
+                        <li><a href="progress.html" class="text-gray-400 hover:text-sky-400" data-i18n-key="nav.progress">學習進度</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-4" data-i18n-key="footer.contact">聯絡我們</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/about.md" target="_blank" class="text-gray-400 hover:text-sky-400" data-i18n-key="footer.about">關於我們</a></li>
+                        <li><a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/contact.md" target="_blank" class="text-gray-400 hover:text-sky-400" data-i18n-key="footer.contact">聯絡我們</a></li>
+                        <li><a href="mailto:yivh5723@gmail.com" class="text-gray-400 hover:text-sky-400">yivh5723@gmail.com</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-4" data-i18n-key="footer.legal">法律資訊</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/terms.md" target="_blank" class="text-gray-400 hover:text-sky-400" data-i18n-key="footer.terms">使用條款</a></li>
+                        <li><a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/privacy.md" target="_blank" class="text-gray-400 hover:text-sky-400" data-i18n-key="footer.privacy">隱私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-white/10 text-center">
+                <p class="text-gray-400 text-sm" data-i18n-key="footer.copyright">
+                    © 2025 DSE SQL & Python 訓練營
+                </p>
+                <p class="text-gray-500 text-xs mt-2">
+                    <a href="https://icthelper.duckdns.org" target="_blank" class="hover:text-sky-400">線上演示</a> | 
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp" target="_blank" class="hover:text-sky-400">GitHub</a>
+                </p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <div class="flex items-center justify-center mb-6">
                     <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-3">
@@ -777,14 +823,14 @@ result = <span class="function">binary_search</span>(numbers, <span class="numbe
                     为数据科学和软件开发职业道路奠定坚实基础。
                 </p>
                 <div class="flex items-center justify-center space-x-8 mb-8">
-                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">关于我们</a>
-                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">使用条款</a>
-                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">隐私政策</a>
-                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">联系我们</a>
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/about.md" target="_blank" class="text-gray-400 hover:text-cyan-400 transition-colors" data-i18n-key="footer.about">關於我們</a>
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/terms.md" target="_blank" class="text-gray-400 hover:text-cyan-400 transition-colors" data-i18n-key="footer.terms">使用條款</a>
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/privacy.md" target="_blank" class="text-gray-400 hover:text-cyan-400 transition-colors" data-i18n-key="footer.privacy">隱私政策</a>
+                    <a href="https://github.com/vvvjb18-lab/dse-sql-python-camp/blob/main/docs/contact.md" target="_blank" class="text-gray-400 hover:text-cyan-400 transition-colors" data-i18n-key="footer.contact">聯絡我們</a>
                 </div>
                 <div class="border-t border-white/10 pt-6">
-                    <p class="text-gray-500 text-sm">
-                        © 2025 SQL & Python 训练营. 保留所有权利.
+                    <p class="text-gray-500 text-sm" data-i18n-key="footer.copyright">
+                        © 2025 DSE SQL & Python 訓練營
                     </p>
                 </div>
             </div>
