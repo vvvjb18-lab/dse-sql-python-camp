@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習進度 - DSE SQL 訓練營</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(18px);
+        }
+        .stat-label {
+            @apply text-xs text-slate-400 mb-1;
+        }
+        .stat-value {
+            @apply text-2xl font-semibold;
+        }
+        /* Markdown 內容樣式 */
+        #ai-analysis-content {
+            line-height: 1.7;
+        }
+        #ai-analysis-content h1,
+        #ai-analysis-content h2,
+        #ai-analysis-content h3 {
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+        }
+        #ai-analysis-content h1 {
+            font-size: 1.5em;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+            padding-bottom: 0.5em;
+        }
+        #ai-analysis-content h2 {
+            font-size: 1.25em;
+        }
+        #ai-analysis-content h3 {
+            font-size: 1.1em;
+        }
+        #ai-analysis-content p {
+            margin-bottom: 1em;
+            color: #e2e8f0;
+        }
+        #ai-analysis-content ul,
+        #ai-analysis-content ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+        #ai-analysis-content li {
+            margin-bottom: 0.5em;
+            color: #e2e8f0;
+        }
+        #ai-analysis-content code {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+            color: #7dd3fc;
+        }
+        #ai-analysis-content pre {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+        #ai-analysis-content pre code {
+            background: transparent;
+            padding: 0;
+            color: #e2e8f0;
+        }
+        #ai-analysis-content blockquote {
+            border-left: 3px solid #3b82f6;
+            padding-left: 1em;
+            margin-left: 0;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+        #ai-analysis-content strong {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+        #ai-analysis-content em {
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- 導航欄 -->
+    <nav class="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-40 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-sky-500 flex items-center justify-center shadow-lg shadow-emerald-500/40">
+                        <span class="text-white font-bold text-sm">PG</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-100">DSE SQL 訓練營</div>
+                        <div class="text-xs text-slate-400">學習進度 · 數據面板</div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-6 text-sm">
+                    <a href="index.html" class="text-slate-300 hover:text-emerald-400">訓練平台</a>
+                    <a href="practice.html" class="text-slate-300 hover:text-emerald-400">題庫練習</a>
+                    <a href="all-practice.html" class="text-slate-300 hover:text-emerald-400">綜合練習</a>
+                    <a href="interactive.html" class="text-slate-300 hover:text-emerald-400">互動練習</a>
+                    <a href="guide.html" class="text-slate-300 hover:text-emerald-400">學習指南</a>
+                    <a href="user-system.html" class="text-slate-300 hover:text-emerald-400">用戶中心</a>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-xs border border-emerald-500/40">目前：學習進度</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主內容 -->
+    <main class="py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <!-- 標題區 -->
+            <section class="glass-card p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold gradient-text mb-2">
+                            個人學習進度總覽
+                        </h1>
+                        <p class="text-sm md:text-base text-slate-300 max-w-2xl">
+                            這裡會顯示你在 DSE SQL 訓練營中的完成題目、正確率、累計學習時數與總積分。
+                            登入後數據會自動從 SQLite 資料庫載入。
+            </p>
+        </div>
+                    <div class="space-y-2 text-xs text-slate-400 md:text-right">
+                        <div>提示：如數據未更新，可按下「重新整理」按鈕。</div>
+                        <div id="progress-user-info" class="text-slate-300">尚未登入</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 未登入提示 -->
+            <section id="progress-not-logged" class="glass-card p-6 flex items-center space-x-4 hidden">
+                <div class="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center border border-slate-700">
+                    <span class="text-3xl">🔐</span>
+                            </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-50 mb-1">請先登入以查看學習進度</h2>
+                    <p class="text-sm text-slate-400 mb-2">
+                        你可以在「用戶中心」頁面登入或註冊新帳號，之後所有完成的題目與學習時間都會自動記錄。
+                    </p>
+                    <button onclick="window.location.href='user-system.html'" class="px-4 py-2 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-400">
+                        前往用戶中心登入
+                    </button>
+                </div>
+            </section>
+
+            <!-- 數據總覽 -->
+            <section id="progress-overview" class="grid grid-cols-1 md:grid-cols-4 gap-4 hidden">
+                <div class="glass-card p-4">
+                    <div class="stat-label">已完成題目</div>
+                    <div id="stat-completed" class="stat-value text-emerald-400">0</div>
+                    <div class="text-[11px] text-slate-500 mt-1" id="stat-completed-desc">完成越多題目，理解越扎實</div>
+                </div>
+                <div class="glass-card p-4">
+                    <div class="stat-label">答題總次數</div>
+                    <div id="stat-attempts" class="stat-value text-sky-400">0</div>
+                    <div class="text-[11px] text-slate-500 mt-1" id="stat-attempts-desc">每一次嘗試都是進步的機會</div>
+                </div>
+                <div class="glass-card p-4">
+                    <div class="stat-label">正確率</div>
+                    <div id="stat-accuracy" class="stat-value text-amber-300">0%</div>
+                    <div class="text-[11px] text-slate-500 mt-1" id="stat-accuracy-desc">目標：穩定在 80% 以上</div>
+                </div>
+                <div class="glass-card p-4">
+                    <div class="stat-label">累計學習時間</div>
+                    <div id="stat-study-time" class="stat-value text-fuchsia-300">0 分鐘</div>
+                    <div class="text-[11px] text-slate-500 mt-1" id="stat-study-hours">約 0.0 小時</div>
+                </div>
+            </section>
+
+            <!-- 圖表與詳情 -->
+            <section id="progress-charts-section" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+                <div class="glass-card p-6 lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold text-slate-100">最近學習趨勢</h2>
+                        <button onclick="refreshProgress()" class="text-[11px] text-sky-400 hover:text-sky-300">重新整理</button>
+                    </div>
+                    <div id="trend-chart" class="w-full h-64"></div>
+                        </div>
+                <div class="glass-card p-6">
+                    <h2 class="text-sm font-semibold text-slate-100 mb-3">題型分佈</h2>
+                    <div id="type-chart" class="w-full h-64"></div>
+                </div>
+            </section>
+
+            <!-- AI 建議與說明 -->
+            <section id="progress-ai-section" class="glass-card p-6 md:p-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base md:text-lg font-semibold text-slate-50">AI 學習建議</h2>
+                    <button id="ai-analysis-btn" onclick="askAIForProgress()" class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-xs font-medium shadow-md shadow-emerald-500/30 hover:from-sky-600 hover:to-emerald-600 transition-all">
+                        🤖 讓 AI 幫我分析學習狀況
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">
+                    以下是根據你目前完成題目與答題紀錄，系統整理出的簡單建議。你也可以點上方按鈕，請 AI 幫你做更詳細的分析。
+                </p>
+                <ul class="text-sm text-slate-200 space-y-2" id="progress-suggestions">
+                    <li>• 完成越多題目，統計結果會越準確。</li>
+                    <li>• 若某個題型的正確率較低，建議回到題庫針對該類型集中練習。</li>
+                    <li>• 保持每週規律學習比一次做很多題更重要。</li>
+                </ul>
+                
+                <!-- AI 分析結果顯示區域 -->
+                <div id="ai-analysis-result" class="hidden mt-6 pt-6 border-t border-slate-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-slate-50 flex items-center">
+                            <span class="mr-2">🤖</span>
+                            AI 分析結果
+                        </h3>
+                        <button onclick="closeAIAnalysis()" class="text-slate-400 hover:text-slate-200 text-xs">
+                            ✕ 關閉
+                        </button>
+                    </div>
+                    <div id="ai-analysis-content" class="prose prose-invert prose-sm max-w-none text-slate-200">
+                        <!-- AI 分析結果將以 markdown 形式顯示在這裡 -->
+            </div>
+        </div>
+    </section>
+        </div>
+    </main>
+
+    <!-- 底部提示 -->
+    <div id="progress-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 shadow-lg shadow-slate-900/80 hidden z-50"></div>
+
+    <!-- API 客戶端與 AI 助手 -->
+    <script src="user-api.js"></script>
+    <script src="ai-service.js"></script>
+    <script src="ai-assistant.js"></script>
+
+    <script>
+        let trendChart = null;
+        let typeChart = null;
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('progress-toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.remove('border-emerald-500/60', 'border-rose-500/60', 'border-sky-500/60');
+            toast.classList.add(type === 'success' ? 'border-emerald-500/60' :
+                                type === 'error' ? 'border-rose-500/60' :
+                                'border-sky-500/60');
+            setTimeout(() => toast.classList.add('hidden'), 2600);
+        }
+
+        async function initProgressPage() {
+            const notLogged = document.getElementById('progress-not-logged');
+            const overview = document.getElementById('progress-overview');
+            const charts = document.getElementById('progress-charts-section');
+            const aiSection = document.getElementById('progress-ai-section');
+
+            if (!UserAPI || !UserAPI.isLoggedIn()) {
+                notLogged.classList.remove('hidden');
+                overview.classList.add('hidden');
+                charts.classList.add('hidden');
+                aiSection.classList.add('hidden');
+                document.getElementById('progress-user-info').textContent = '尚未登入';
+                return;
+            }
+
+            document.getElementById('progress-user-info').textContent =
+                '登入用戶：' + (UserAPI.getCurrentUsername() || '未知用戶');
+
+            notLogged.classList.add('hidden');
+            overview.classList.remove('hidden');
+            charts.classList.remove('hidden');
+            aiSection.classList.remove('hidden');
+
+            await loadProgressData();
+
+            anime({
+                targets: '.glass-card',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 600,
+                delay: anime.stagger(80),
+                easing: 'easeOutQuad'
+            });
+        }
+
+        async function loadProgressData() {
+            try {
+                const res = await UserAPI.getProgress();
+                if (!res.success || !res.progress) {
+                    showToast('暫時無法載入進度資料', 'error');
+                    return;
+                }
+
+                const p = res.progress;
+                const completedExercises = p.completed_exercises || [];
+                const scores = p.scores || {};
+                const studyTime = p.study_time || 0;
+                const totalScore = p.total_score || 0;
+
+                const totalAttempts = Object.values(scores).reduce((sum, arr) => {
+                    if (Array.isArray(arr)) return sum + arr.length;
+                    return sum;
+                }, 0);
+                const correctAnswers = totalScore / 100; // 假設每題 100 分
+                const accuracy = totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0;
+
+                // 更新總覽統計
+                document.getElementById('stat-completed').textContent = completedExercises.length;
+                document.getElementById('stat-attempts').textContent = totalAttempts;
+                document.getElementById('stat-accuracy').textContent = accuracy + '%';
+                document.getElementById('stat-study-time').textContent = `${studyTime} 分鐘`;
+                document.getElementById('stat-study-hours').textContent = `約 ${(studyTime / 60).toFixed(1)} 小時`;
+
+                // 初始化 / 更新圖表
+                initCharts(scores, completedExercises.length);
+
+                // 根據數據更新簡單建議文字
+                const suggestions = [];
+                if (completedExercises.length < 20) {
+                    suggestions.push('目前完成題目數較少，建議先集中完成基礎題目以建立信心。');
+                } else {
+                    suggestions.push('你已完成不少題目，可以開始挑戰難度較高的 JOIN / 子查詢題目。');
+                }
+                if (accuracy < 60 && totalAttempts > 0) {
+                    suggestions.push('正確率低於 60%，可以把常錯的題型記錄下來，再請 AI 幫你整理重點。');
+                } else if (accuracy >= 80) {
+                    suggestions.push('正確率已超過 80%，表現很好，可以多做綜合練習鞏固。');
+                }
+                if (studyTime < 120) {
+                    suggestions.push('累計學習時間少於 2 小時，建議安排固定時段每日練習 20–30 分鐘。');
+                }
+
+                const sugEl = document.getElementById('progress-suggestions');
+                if (suggestions.length > 0 && sugEl) {
+                    sugEl.innerHTML = suggestions.map(s => `<li>• ${s}</li>`).join('');
+                }
+            } catch (e) {
+                console.error('載入進度失敗:', e);
+                showToast('載入進度時發生錯誤', 'error');
+            }
+        }
+
+        function initCharts(scores, completedCount) {
+            const trendDom = document.getElementById('trend-chart');
+            const typeDom = document.getElementById('type-chart');
+            if (!trendDom || !typeDom || typeof echarts === 'undefined') return;
+
+            const typeKeys = ['fill-blank', 'card-arrangement', 'drag-drop', 'sql-practice'];
+            const typeLabels = ['填空題', '卡片排列', '拖放練習', '整句輸入'];
+            const typeCounts = typeKeys.map(k => (Array.isArray(scores[k]) ? scores[k].length : 0));
+
+            if (!trendChart) trendChart = echarts.init(trendDom);
+            if (!typeChart) typeChart = echarts.init(typeDom);
+            
+            const trendOption = {
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['完成題目', '答題次數', '總積分'] },
+                yAxis: { type: 'value' },
+                series: [
+                    {
+                        name: '學習表現',
+                        type: 'bar',
+                        data: [completedCount, typeCounts.reduce((a, b) => a + b, 0), 0],
+                        itemStyle: { color: '#22c55e' }
+                        }
+                ]
+            };
+
+            const typeOption = {
+                tooltip: { trigger: 'item' },
+                legend: { top: 0, textStyle: { color: '#e5e7eb', fontSize: 11 } },
+                series: [
+                    {
+                        name: '題型分佈',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: '#020617',
+                            borderWidth: 2
+                        },
+                        label: { show: false },
+                        emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold' } },
+                        labelLine: { show: false },
+                        data: typeLabels.map((name, idx) => ({
+                            value: typeCounts[idx],
+                            name
+                        }))
+                    }
+                ]
+            };
+            
+            trendChart.setOption(trendOption);
+            typeChart.setOption(typeOption);
+        }
+
+        function refreshProgress() {
+            loadProgressData();
+            showToast('已重新整理最新進度', 'success');
+        }
+
+        async function askAIForProgress() {
+            const btn = document.getElementById('ai-analysis-btn');
+            const resultDiv = document.getElementById('ai-analysis-result');
+            const contentDiv = document.getElementById('ai-analysis-content');
+            
+            // 顯示載入狀態
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳ AI 正在分析中...';
+            }
+            
+            if (resultDiv && contentDiv) {
+                resultDiv.classList.remove('hidden');
+                contentDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="text-slate-400">⏳ AI 正在分析你的學習狀況，請稍候...</div></div>';
+            }
+            
+            try {
+                if (typeof AIService === 'undefined') {
+                    showToast('AI 服務尚未載入', 'error');
+                    if (resultDiv) resultDiv.classList.add('hidden');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = '🤖 讓 AI 幫我分析學習狀況';
+                    }
+                    return;
+        }
+                const res = await UserAPI.getProgress();
+                if (!res.success || !res.progress) {
+                    showToast('暫時無法取得進度資料', 'error');
+                    if (resultDiv) resultDiv.classList.add('hidden');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = '🤖 讓 AI 幫我分析學習狀況';
+                    }
+                    return;
+                }
+
+                const p = res.progress;
+                const message = `
+請根據以下學習數據，幫我分析目前的學習狀況，並給出具體建議：
+
+- 已完成題目數：${(p.completed_exercises || []).length}
+- 題型分佈（JSON）：${JSON.stringify(p.scores || {})}
+- 累計學習時間：${p.study_time || 0} 分鐘
+- 等級：${p.level || 1}
+- 總積分：${p.total_score || 0}
+
+請用繁體中文回答，使用 Markdown 格式，結構清晰，適合中學生閱讀。請包含以下內容：
+1. **我的優勢是什麼？** - 分析我表現較好的部分
+2. **哪些題型或概念需要加強？** - 指出需要改進的地方
+3. **接下來 1–2 週的學習計劃建議** - 給出具體的學習建議
+
+請使用標題、列表、強調等 Markdown 格式，讓內容更易讀。`;
+
+                const reply = await AIService.chat(message, '你是一位 DSE SQL 補習老師，正在幫學生檢視學習數據並設計讀書計劃。請用繁體中文回答，使用 Markdown 格式。', 0.6);
+
+                // 顯示在網頁中的 markdown 區域
+                const resultDiv = document.getElementById('ai-analysis-result');
+                const contentDiv = document.getElementById('ai-analysis-content');
+                const btn = document.getElementById('ai-analysis-btn');
+                
+                if (resultDiv && contentDiv) {
+                    // 顯示結果區域
+                    resultDiv.classList.remove('hidden');
+                    
+                    // 使用 marked.js 渲染 markdown
+                    if (typeof marked !== 'undefined') {
+                        try {
+                            const html = marked.parse(reply || 'AI 返回了空內容，請稍後重試。');
+                            contentDiv.innerHTML = html;
+                        } catch (e) {
+                            console.error('Markdown 渲染失敗:', e);
+                            contentDiv.innerHTML = '<div class="text-red-400">Markdown 渲染失敗，顯示原始內容：</div><pre class="mt-2 text-sm whitespace-pre-wrap">' + (reply || 'AI 返回了空內容') + '</pre>';
+                        }
+                    } else {
+                        // 如果 marked.js 未加載，顯示純文本
+                        contentDiv.innerHTML = '<pre class="whitespace-pre-wrap text-sm">' + (reply || 'AI 返回了空內容，請稍後重試。') + '</pre>';
+                    }
+                    
+                    // 滾動到分析結果區域
+                    setTimeout(() => {
+                        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                } else {
+                    // 如果元素不存在，使用舊的方式
+                    if (window.aiAssistant && typeof window.aiAssistant.showMessage === 'function') {
+                        window.aiAssistant.openSidebar && window.aiAssistant.openSidebar();
+                        window.aiAssistant.showMessage('assistant', reply || 'AI 返回了空內容，請稍後重試。');
+                    } else {
+                        alert(reply || 'AI 返回了空內容，請稍後重試。');
+                    }
+                }
+                
+                showToast('AI 分析完成', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('向 AI 要求分析時發生錯誤', 'error');
+                const resultDiv = document.getElementById('ai-analysis-result');
+                const contentDiv = document.getElementById('ai-analysis-content');
+                if (resultDiv && contentDiv) {
+                    resultDiv.classList.remove('hidden');
+                    contentDiv.innerHTML = '<div class="text-red-400">❌ 分析失敗：' + (e.message || '未知錯誤') + '</div>';
+        }
+            } finally {
+                // 恢復按鈕狀態
+                const btn = document.getElementById('ai-analysis-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '🤖 讓 AI 幫我分析學習狀況';
+                }
+            }
+        }
+        
+        function closeAIAnalysis() {
+            const resultDiv = document.getElementById('ai-analysis-result');
+            if (resultDiv) {
+                resultDiv.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initProgressPage);
+    </script>
+</body>
+</html>
+

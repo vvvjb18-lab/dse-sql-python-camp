@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SQL训练营 - 移动版</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SQL训练营">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 核心库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sql/sql.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    
+    <!-- 自定义样式 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+            border: 1px solid rgba(0, 245, 255, 0.5);
+        }
+        
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #00f5ff;
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active .nav-icon {
+            filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.6));
+        }
+        
+        .exercise-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .exercise-card:active {
+            transform: scale(0.98);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .sql-editor {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .sql-editor .CodeMirror {
+            height: 200px;
+            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .sql-editor .CodeMirror-gutters {
+            background: #334155;
+            border-right: 1px solid #475569;
+        }
+        
+        .sql-editor .CodeMirror-linenumber {
+            color: #64748b;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.98);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .drag-item {
+            background: rgba(0, 245, 255, 0.1);
+            border: 2px dashed rgba(0, 245, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 4px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 245, 255, 0.4);
+        }
+        
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #00f5ff;
+            background: rgba(0, 245, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sql-editor .CodeMirror {
+                height: 150px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- 主容器 -->
+    <div class="app-container">
+        <!-- 首页 -->
+        <div id="home-page" class="page">
+            <!-- 头部 -->
+            <header class="px-4 py-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold gradient-text">SQL训练营</h1>
+                        <p class="text-sm text-gray-300 mt-1">掌握数据库查询艺术</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">SQL</span>
+                    </div>
+                </div>
+                
+                <!-- 进度环 -->
+                <div class="glass-card p-6 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-2">学习进度</h3>
+                            <p class="text-sm text-gray-300">本周学习目标</p>
+                        </div>
+                        <div class="relative w-20 h-20">
+                            <svg class="progress-ring w-20 h-20">
+                                <circle cx="40" cy="40" r="36" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="transparent"/>
+                                <circle id="progress-circle" cx="40" cy="40" r="36" stroke="url(#gradient)" stroke-width="8" fill="transparent" 
+                                        stroke-dasharray="226" stroke-dashoffset="226" class="progress-ring-circle"/>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#00f5ff;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="progress-text" class="text-lg font-bold text-white">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 统计卡片 -->
+            <section class="px-4 mb-6">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold gradient-text" id="total-questions">0</div>
+                        <div class="text-sm text-gray-300 mt-1">总练习数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold gradient-text" id="correct-rate">0%</div>
+                        <div class="text-sm text-gray-300 mt-1">正确率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold gradient-text" id="study-days">0</div>
+                        <div class="text-sm text-gray-300 mt-1">学习天数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-2xl font-bold gradient-text" id="current-level">初级</div>
+                        <div class="text-sm text-gray-300 mt-1">当前等级</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 功能模块 -->
+            <section class="px-4 mb-6">
+                <h3 class="text-lg font-semibold text-white mb-4">学习模块</h3>
+                <div class="space-y-3">
+                    <div class="exercise-card glass-card p-4 neon-border" onclick="showPage('interactive')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">🎯</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">互动练习</h4>
+                                <p class="text-sm text-gray-300">拖拽、填空、排序等多种练习模式</p>
+                            </div>
+                            <div class="text-cyan-400">→</div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise-card glass-card p-4" onclick="showPage('practice')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">💻</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL实战</h4>
+                                <p class="text-sm text-gray-300">真实SQL查询练习与代码编辑器</p>
+                            </div>
+                            <div class="text-cyan-400">→</div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise-card glass-card p-4" onclick="showPage('comprehensive')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">📚</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">综合练习</h4>
+                                <p class="text-sm text-gray-300">100道SQL题目 + 100道Python题目</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded mr-2">200题</span>
+                                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">全覆盖</span>
+                                </div>
+                            </div>
+                            <div class="text-cyan-400">→</div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise-card glass-card p-4" onclick="showPage('profile')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-red-400 to-pink-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">👤</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">个人中心</h4>
+                                <p class="text-sm text-gray-300">学习统计与成就系统</p>
+                            </div>
+                            <div class="text-cyan-400">→</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 今日推荐 -->
+            <section class="px-4 mb-6">
+                <h3 class="text-lg font-semibold text-white mb-4">今日推荐</h3>
+                <div class="glass-card p-4 neon-border">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mr-4 flex-shrink-0">
+                            <span class="text-white text-2xl">🔥</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-white mb-2">SQL JOIN 进阶练习</h4>
+                            <p class="text-sm text-gray-300 mb-3">掌握多表连接的高级技巧，包括LEFT JOIN、INNER JOIN等复杂查询</p>
+                            <button class="btn-primary px-4 py-2 text-sm" onclick="startRecommendedExercise()">开始练习</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 互动练习页面 -->
+        <div id="interactive-page" class="page hidden">
+            <header class="px-4 py-6">
+                <div class="flex items-center mb-6">
+                    <button onclick="showPage('home')" class="mr-4 p-2 rounded-lg bg-white/10">
+                        <span class="text-white">←</span>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">互动练习</h1>
+                        <p class="text-sm text-gray-300">多种练习模式，寓教于乐</p>
+                    </div>
+                </div>
+            </header>
+            
+            <section class="px-4 mb-6">
+                <div class="space-y-4">
+                    <!-- 填空题 -->
+                    <div class="glass-card p-4" onclick="startInteractiveExercise('fill-blank')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">✏️</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL填空练习</h4>
+                                <p class="text-sm text-gray-300">填写正确的SQL关键词</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">初级</span>
+                                    <span class="text-xs text-gray-400 ml-2">10题</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 拖拽排序 -->
+                    <div class="glass-card p-4" onclick="startInteractiveExercise('drag-sort')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">🔄</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL语句排序</h4>
+                                <p class="text-sm text-gray-300">拖拽排序SQL语句的正确顺序</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">中级</span>
+                                    <span class="text-xs text-gray-400 ml-2">8题</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 选择题 -->
+                    <div class="glass-card p-4" onclick="startInteractiveExercise('multiple-choice')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">🎯</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL选择题</h4>
+                                <p class="text-sm text-gray-300">选择正确的SQL语法或结果</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">混合</span>
+                                    <span class="text-xs text-gray-400 ml-2">15题</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 连接匹配 -->
+                    <div class="glass-card p-4" onclick="startInteractiveExercise('connect-match')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center mr-4">
+                                <span class="text-white text-xl">🔗</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL概念匹配</h4>
+                                <p class="text-sm text-gray-300">匹配SQL概念与对应描述</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">高级</span>
+                                    <span class="text-xs text-gray-400 ml-2">12题</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 互动练习详情页 -->
+        <div id="interactive-detail-page" class="page hidden">
+            <header class="px-4 py-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <button onclick="showPage('interactive')" class="mr-4 p-2 rounded-lg bg-white/10">
+                            <span class="text-white">←</span>
+                        </button>
+                        <div>
+                            <h1 id="exercise-title" class="text-xl font-bold text-white">SQL填空练习</h1>
+                            <p id="exercise-progress" class="text-sm text-gray-300">第1题 / 共10题</p>
+                        </div>
+                    </div>
+                    <button onclick="closeExercise()" class="p-2 rounded-lg bg-white/10">
+                        <span class="text-white">✕</span>
+                    </button>
+                </div>
+                
+                <!-- 进度条 -->
+                <div class="w-full bg-white/10 rounded-full h-2 mb-6">
+                    <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </header>
+            
+            <!-- 练习内容区域 -->
+            <section class="px-4 mb-6">
+                <div id="exercise-content" class="glass-card p-6">
+                    <!-- 动态内容将在这里插入 -->
+                </div>
+            </section>
+            
+            <!-- 操作按钮 -->
+            <section class="px-4 mb-6">
+                <div class="flex space-x-3">
+                    <button id="prev-btn" class="btn-secondary flex-1 py-3 text-center" onclick="previousQuestion()" disabled>上一题</button>
+                    <button id="next-btn" class="btn-primary flex-1 py-3 text-center" onclick="nextQuestion()">下一题</button>
+                </div>
+            </section>
+            
+            <!-- 答案解析 -->
+            <section id="answer-section" class="px-4 mb-6 hidden">
+                <div class="glass-card p-4 border-l-4 border-green-400">
+                    <h4 class="font-semibold text-green-300 mb-2">答案解析</h4>
+                    <div id="answer-content" class="text-sm text-gray-300">
+                        <!-- 答案内容将在这里插入 -->
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- SQL实战页面 -->
+        <div id="practice-page" class="page hidden">
+            <header class="px-4 py-6">
+                <div class="flex items-center mb-6">
+                    <button onclick="showPage('home')" class="mr-4 p-2 rounded-lg bg-white/10">
+                        <span class="text-white">←</span>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">SQL实战</h1>
+                        <p class="text-sm text-gray-300">真实SQL查询练习</p>
+                    </div>
+                </div>
+            </header>
+            
+            <section class="px-4 mb-6">
+                <div class="glass-card p-4 mb-4">
+                    <h3 class="font-semibold text-white mb-3">题目描述</h3>
+                    <p id="practice-description" class="text-sm text-gray-300 mb-4">
+                        查询所有学生的姓名和年龄，按年龄降序排列。
+                    </p>
+                    
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-white mb-2">数据表结构</h4>
+                        <div class="bg-slate-800 rounded-lg p-3 text-sm">
+                            <div class="text-cyan-300">students 表：</div>
+                            <div class="text-gray-300 ml-2">- id (INT) 学生ID</div>
+                            <div class="text-gray-300 ml-2">- name (VARCHAR) 学生姓名</div>
+                            <div class="text-gray-300 ml-2">- age (INT) 学生年龄</div>
+                            <div class="text-gray-300 ml-2">- grade (VARCHAR) 年级</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SQL编辑器 -->
+                <div class="glass-card p-4 mb-4">
+                    <h4 class="font-semibold text-white mb-3">编写SQL查询</h4>
+                    <div class="sql-editor">
+                        <textarea id="sql-editor" placeholder="在此输入SQL查询语句..."></textarea>
+                    </div>
+                    <div class="flex space-x-3 mt-4">
+                        <button class="btn-primary px-6 py-2 text-sm" onclick="executeSQL()">执行查询</button>
+                        <button class="btn-secondary px-6 py-2 text-sm" onclick="clearSQL()">清空</button>
+                        <button class="btn-secondary px-6 py-2 text-sm" onclick="showHint()">提示</button>
+                    </div>
+                </div>
+                
+                <!-- 执行结果 -->
+                <div id="result-section" class="glass-card p-4 hidden">
+                    <h4 class="font-semibold text-white mb-3">执行结果</h4>
+                    <div id="result-content" class="bg-slate-800 rounded-lg p-3 overflow-x-auto">
+                        <!-- 结果将在这里显示 -->
+                    </div>
+                </div>
+                
+                <!-- 下一个练习 -->
+                <div class="text-center mt-6">
+                    <button class="btn-primary px-8 py-3" onclick="nextPractice()">下一题</button>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 题库练习页面 -->
+        <div id="questions-page" class="page hidden">
+            <header class="px-4 py-6">
+                <div class="flex items-center mb-6">
+                    <button onclick="showPage('home')" class="mr-4 p-2 rounded-lg bg-white/10">
+                        <span class="text-white">←</span>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">题库练习</h1>
+                        <p class="text-sm text-gray-300">分阶段题目练习</p>
+                    </div>
+                </div>
+            </header>
+            
+            <section class="px-4 mb-6">
+                <!-- 难度选择 -->
+                <div class="glass-card p-4 mb-6">
+                    <h3 class="font-semibold text-white mb-4">选择难度</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="difficulty-btn btn-secondary py-3 text-center active" data-level="beginner" onclick="selectDifficulty('beginner')">
+                            <div class="font-semibold">初级</div>
+                            <div class="text-xs text-gray-400">基础查询</div>
+                        </button>
+                        <button class="difficulty-btn btn-secondary py-3 text-center" data-level="intermediate" onclick="selectDifficulty('intermediate')">
+                            <div class="font-semibold">中级</div>
+                            <div class="text-xs text-gray-400">复杂查询</div>
+                        </button>
+                        <button class="difficulty-btn btn-secondary py-3 text-center" data-level="advanced" onclick="selectDifficulty('advanced')">
+                            <div class="font-semibold">高级</div>
+                            <div class="text-xs text-gray-400">优化技巧</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 题目列表 -->
+                <div id="questions-list" class="space-y-3">
+                    <!-- 动态生成题目列表 -->
+                </div>
+            </section>
+        </div>
+        
+        <!-- 综合练习页面 -->
+        <div id="comprehensive-page" class="page hidden">
+            <header class="px-4 py-6">
+                <div class="flex items-center mb-6">
+                    <button onclick="showPage('home')" class="mr-4 p-2 rounded-lg bg-white/10">
+                        <span class="text-white">←</span>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">综合练习</h1>
+                        <p class="text-sm text-gray-300">100道SQL + 100道Python题目</p>
+                    </div>
+                </div>
+                
+                <!-- 切换题库类型 -->
+                <div class="flex space-x-2 mb-4">
+                    <button id="sql-tab" class="btn-primary px-4 py-2 text-sm flex-1" onclick="switchQuestionBank('sql')">SQL题库</button>
+                    <button id="python-tab" class="btn-secondary px-4 py-2 text-sm flex-1" onclick="switchQuestionBank('python')">Python题库</button>
+                </div>
+            </header>
+            
+            <!-- 统计信息 -->
+            <section class="px-4 mb-6">
+                <div class="glass-card p-4">
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold gradient-text" id="bank-total">100</div>
+                            <div class="text-sm text-gray-300">题目总数</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold gradient-text" id="bank-completed">0</div>
+                            <div class="text-sm text-gray-300">已完成</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 难度筛选 -->
+            <section class="px-4 mb-6">
+                <div class="glass-card p-4">
+                    <h3 class="font-semibold text-white mb-3">选择难度</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="difficulty-btn btn-secondary py-2 text-center text-sm" data-level="easy" onclick="selectBankDifficulty('easy')">
+                            <div class="font-semibold">初级</div>
+                        </button>
+                        <button class="difficulty-btn btn-secondary py-2 text-center text-sm active" data-level="medium" onclick="selectBankDifficulty('medium')">
+                            <div class="font-semibold">中级</div>
+                        </button>
+                        <button class="difficulty-btn btn-secondary py-2 text-center text-sm" data-level="hard" onclick="selectBankDifficulty('hard')">
+                            <div class="font-semibold">高级</div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 题目列表 -->
+            <section class="px-4 mb-6">
+                <div id="comprehensive-questions" class="space-y-3">
+                    <!-- 题目将在这里动态生成 -->
+                </div>
+            </section>
+        </div>
+        
+        <!-- 个人中心页面 -->
+            <header class="px-4 py-6">
+                <div class="flex items-center mb-6">
+                    <button onclick="showPage('home')" class="mr-4 p-2 rounded-lg bg-white/10">
+                        <span class="text-white">←</span>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">个人中心</h1>
+                        <p class="text-sm text-gray-300">学习统计与成就</p>
+                    </div>
+                </div>
+            </header>
+            
+            <section class="px-4 mb-6">
+                <!-- 用户信息 -->
+                <div class="glass-card p-6 mb-6 text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 mx-auto mb-4 flex items-center justify-center">
+                        <span class="text-white text-2xl font-bold" id="user-avatar">用</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2" id="user-name">SQL学习者</h3>
+                    <p class="text-sm text-gray-300 mb-4">坚持学习 <span id="study-streak">0</span> 天</p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="btn-primary px-4 py-2 text-sm" onclick="editProfile()">编辑资料</button>
+                        <button class="btn-secondary px-4 py-2 text-sm" onclick="resetProgress()">重置进度</button>
+                    </div>
+                </div>
+                
+                <!-- 学习统计 -->
+                <div class="glass-card p-4 mb-6">
+                    <h3 class="font-semibold text-white mb-4">学习统计</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold gradient-text" id="total-exercises">0</div>
+                            <div class="text-sm text-gray-300">总练习数</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold gradient-text" id="accuracy-rate">0%</div>
+                            <div class="text-sm text-gray-300">正确率</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold gradient-text" id="study-time">0h</div>
+                            <div class="text-sm text-gray-300">学习时长</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold gradient-text" id="achievements">0</div>
+                            <div class="text-sm text-gray-300">获得成就</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 成就系统 -->
+                <div class="glass-card p-4 mb-6">
+                    <h3 class="font-semibold text-white mb-4">成就徽章</h3>
+                    <div id="achievements-grid" class="grid grid-cols-4 gap-3">
+                        <!-- 成就徽章将在这里显示 -->
+                    </div>
+                </div>
+                
+                <!-- 学习记录 -->
+                <div class="glass-card p-4">
+                    <h3 class="font-semibold text-white mb-4">最近学习</h3>
+                    <div id="recent-activities" class="space-y-3">
+                        <!-- 学习记录将在这里显示 -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <nav class="app-footer">
+        <div class="flex items-center justify-around py-3">
+            <button class="nav-item active flex flex-col items-center" onclick="showPage('home')">
+                <div class="nav-icon text-2xl mb-1">🏠</div>
+                <span class="text-xs">首页</span>
+            </button>
+            <button class="nav-item flex flex-col items-center" onclick="showPage('interactive')">
+                <div class="nav-icon text-2xl mb-1">🎯</div>
+                <span class="text-xs">互动</span>
+            </button>
+            <button class="nav-item flex flex-col items-center" onclick="showPage('practice')">
+                <div class="nav-icon text-2xl mb-1">💻</div>
+                <span class="text-xs">实战</span>
+            </button>
+            <button class="nav-item flex flex-col items-center" onclick="showPage('questions')">
+                <div class="nav-icon text-2xl mb-1">📚</div>
+                <span class="text-xs">题库</span>
+            </button>
+            <button class="nav-item flex flex-col items-center" onclick="showPage('profile')">
+                <div class="nav-icon text-2xl mb-1">👤</div>
+                <span class="text-xs">我的</span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- 模态框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-body">
+                <!-- 模态框内容 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 主要JavaScript -->
+    <script src="mobile-app.js"></script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        }
+    </script>
+</body>
+</html>

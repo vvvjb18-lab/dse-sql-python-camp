@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習指南 - DSE SQL 訓練營</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(18px);
+        }
+        .section-title {
+            @apply text-xl font-semibold text-slate-50 mb-2;
+        }
+        .section-subtitle {
+            @apply text-xs text-slate-400 mb-4;
+        }
+        .step-badge {
+            @apply w-7 h-7 rounded-full bg-sky-500/15 text-sky-400 flex items-center justify-center text-xs font-semibold mr-3 border border-sky-500/40;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- 導航欄 -->
+    <nav class="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-40 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/40">
+                        <span class="text-white font-bold text-sm">SQL</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-100">DSE SQL 訓練營</div>
+                        <div class="text-xs text-slate-400">學習指南 · 完整路線圖</div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-6 text-sm">
+                    <a href="index.html" class="text-slate-300 hover:text-sky-400">訓練平台</a>
+                    <a href="practice.html" class="text-slate-300 hover:text-sky-400">題庫練習</a>
+                    <a href="all-practice.html" class="text-slate-300 hover:text-sky-400">綜合練習</a>
+                    <a href="interactive.html" class="text-slate-300 hover:text-sky-400">互動練習</a>
+                    <a href="progress.html" class="text-slate-300 hover:text-sky-400">學習進度</a>
+                    <a href="user-system.html" class="text-slate-300 hover:text-sky-400">用戶中心</a>
+                    <span class="px-3 py-1 rounded-full bg-sky-500/15 text-sky-300 text-xs border border-sky-500/40">目前：學習指南</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主內容 -->
+    <main class="py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <!-- 標題區 -->
+            <section class="glass-card p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold gradient-text mb-2">
+                            DSE SQL & Python 學習指南
+                        </h1>
+                        <p class="text-sm md:text-base text-slate-300 max-w-2xl">
+                            這是一份專為 DSE 考生設計的 SQL 學習路線圖，從零基礎開始，一步一步帶你掌握
+                            SELECT、JOIN、GROUP BY、子查詢，到 Python 中的資料處理實戰。
+                        </p>
+                    </div>
+                    <div class="space-y-2 text-xs text-slate-400">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span>適合：F4–F6 學生、自學 SQL & Python 的初學者</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                            <span>建議使用：配合右下角 🤖 AI 學習助手，一邊做題一邊問問題</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 學習路線圖 -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <!-- SQL 基礎路線 -->
+                <div class="glass-card p-6 space-y-4">
+                    <h2 class="section-title">路線一：SQL 基礎到進階</h2>
+                    <p class="section-subtitle">對應 `practice.html` / `all-practice.html` 題庫</p>
+                    <div class="space-y-4 text-sm text-slate-200">
+                        <div class="flex items-start">
+                            <div class="step-badge">1</div>
+                            <div>
+                                <div class="font-semibold mb-1">基礎查詢：SELECT + WHERE</div>
+                                <p class="text-slate-400 text-xs mb-1">理解如何從一張表中選出需要的欄位與紀錄。</p>
+                                <p class="text-[11px] text-sky-300">建議：先在題庫中完成「基礎查詢」分類，再請 AI 幫你檢查寫法。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="step-badge">2</div>
+                            <div>
+                                <div class="font-semibold mb-1">排序與限制：ORDER BY / LIMIT</div>
+                                <p class="text-slate-400 text-xs mb-1">學會控制結果顯示順序，以及只取部份資料。</p>
+                                <p class="text-[11px] text-sky-300">可以請 AI 解釋：升序 / 降序的差異，以及常見錯誤。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="step-badge">3</div>
+                            <div>
+                                <div class="font-semibold mb-1">聚合與分組：GROUP BY / HAVING</div>
+                                <p class="text-slate-400 text-xs mb-1">懂得使用 COUNT、SUM、AVG 等統計函數。</p>
+                                <p class="text-[11px] text-sky-300">遇到難題時，把題目 + 你的 SQL 給 AI，請它指出問題所在。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="step-badge">4</div>
+                            <div>
+                                <div class="font-semibold mb-1">多表查詢：JOIN / UNION</div>
+                                <p class="text-slate-400 text-xs mb-1">這是 DSE 及現實工作都非常重要的部分。</p>
+                                <p class="text-[11px] text-emerald-300">建議配合「綜合練習」中 JOIN 題目，請 AI 幫你畫出表關係。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="step-badge">5</div>
+                            <div>
+                                <div class="font-semibold mb-1">子查詢與進階技巧</div>
+                                <p class="text-slate-400 text-xs mb-1">學會在 FROM / WHERE 中使用子查詢，提升解題彈性。</p>
+                                <p class="text-[11px] text-amber-300">完成大部份題目後，可以請 AI 幫你總結「最常出現的 SQL 模式」。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Python + SQL -->
+                <div class="glass-card p-6 space-y-4">
+                    <h2 class="section-title">路線二：Python 結合 SQL</h2>
+                    <p class="section-subtitle">對應 `python-center.html` 中的教學模塊</p>
+                    <ul class="space-y-3 text-sm text-slate-200">
+                        <li>
+                            <span class="font-semibold">步驟 1：熟悉 Python 基礎語法</span>
+                            <p class="text-xs text-slate-400 mt-1">變數、條件判斷、迴圈、函數，建議使用 Python 中心內的範例程式。</p>
+                        </li>
+                        <li>
+                            <span class="font-semibold">步驟 2：使用 Python 連接 SQLite</span>
+                            <p class="text-xs text-slate-400 mt-1">了解 `sqlite3` 模組，學會在 Python 中執行 SELECT / INSERT / UPDATE。</p>
+                        </li>
+                        <li>
+                            <span class="font-semibold">步驟 3：實作「小專題」</span>
+                            <p class="text-xs text-slate-400 mt-1">例如：學生成績查詢系統、圖書管理、簡單報表輸出。</p>
+                            <p class="text-[11px] text-sky-300 mt-1">可以把專題需求丟給 AI，請它幫你拆分任務與提供程式骨架。</p>
+                        </li>
+                        <li>
+                            <span class="font-semibold">步驟 4：優化與錯誤處理</span>
+                            <p class="text-xs text-slate-400 mt-1">加入例外處理、輸入驗證，並讓 AI 幫你檢查程式風格與可讀性。</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- AI 學習助手用法 -->
+                <div class="glass-card p-6 space-y-4">
+                    <h2 class="section-title">善用 AI 學習助手</h2>
+                    <p class="section-subtitle">對應右下角 🤖 按鈕 · `ai-assistant.js`</p>
+                    <div class="space-y-3 text-sm text-slate-200">
+                        <div>
+                            <div class="font-semibold mb-1">1. 不要只叫它「給答案」</div>
+                            <p class="text-xs text-slate-400">
+                                建議提示詞：「請一步一步解釋這個 SQL 怎樣想」，或「我寫錯在哪裡？」。
+                            </p>
+                        </div>
+                        <div>
+                            <div class="font-semibold mb-1">2. 結合題庫使用</div>
+                            <p class="text-xs text-slate-400">
+                                在 `practice.html` 內，每題旁邊有「🤖 詢問 AI」按鈕，會把題目與標準答案一起交給 AI，
+                                幫你做「檢討講解」，而不是單純出答案。
+                            </p>
+                        </div>
+                        <div>
+                            <div class="font-semibold mb-1">3. 做完再問，比做之前問更有效</div>
+                            <p class="text-xs text-slate-400">
+                                建議先嘗試自己寫 SQL，再把「題目 + 你的答案 + 標準答案」交給 AI，請它比較差異。
+                            </p>
+                        </div>
+                        <div>
+                            <div class="font-semibold mb-1">4. 學習進度分析</div>
+                            <p class="text-xs text-slate-400">
+                                在「學習進度」頁面中，系統會匯總你完成的題目，未來可擴充由 AI 根據你錯題紀錄，建議下一步學習重點。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 常見問題 -->
+            <section class="glass-card p-6 md:p-8">
+                <h2 class="section-title">常見問題 Q&A</h2>
+                <p class="section-subtitle">如果還有疑問，可以直接問右下角的 AI 助手</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-200">
+                    <div>
+                        <h3 class="font-semibold mb-1">Q1：每天應該花多少時間？</h3>
+                        <p class="text-xs text-slate-400">
+                            建議每天至少 20–30 分鐘，包含「看一個例子 + 做 2–3 題題目 + 反思錯題」。
+                            比起一次做很多題，更重要的是每天有持續。
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Q2：先學 SQL 還是先學 Python？</h3>
+                        <p class="text-xs text-slate-400">
+                            如果目標是 DSE 資料庫部分，建議優先把 SQL 基礎打穩，之後再用 Python 來做延伸應用。
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Q3：遇到完全不明白的題目怎麼辦？</h3>
+                        <p class="text-xs text-slate-400">
+                            可以把題目完整貼給 AI，請它先用「生活例子」解釋，再回到 SQL 語法，這樣比較容易吸收。
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Q4：如何知道自己準備好了？</h3>
+                        <p class="text-xs text-slate-400">
+                            當你在題庫中大部份分類都能正確完成，而且可以用自己的話向同學解釋題目時，就代表已經掌握得不錯。
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- AI 助手（全站通用） -->
+    <script src="ai-service.js"></script>
+    <script src="ai-assistant.js"></script>
+
+    <script>
+        // 簡單進場動畫
+        document.addEventListener('DOMContentLoaded', function () {
+            anime({
+                targets: '.glass-card',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 600,
+                delay: anime.stagger(80),
+                easing: 'easeOutQuad'
+            });
+        });
+    </script>
+</body>
+</html>
+

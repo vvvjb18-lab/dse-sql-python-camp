@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习中心 - SQL & Python 训练营</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #00f5ff;
+            --primary-purple: #6366f1;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --gradient-primary: linear-gradient(135deg, #00f5ff 0%, #6366f1 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        body {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-green {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 1px;
+        }
+        
+        .sidebar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chapter-item {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .chapter-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .chapter-item.active {
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+        }
+        
+        .chapter-item.completed {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .code-editor {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-editor .CodeMirror {
+            height: 300px;
+            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .code-editor .CodeMirror-gutters {
+            background: #334155;
+            border-right: 1px solid #475569;
+        }
+        
+        .code-editor .CodeMirror-linenumber {
+            color: #64748b;
+        }
+        
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .code-block .keyword {
+            color: #00f5ff;
+        }
+        
+        .code-block .string {
+            color: #10b981;
+        }
+        
+        .code-block .comment {
+            color: #64748b;
+        }
+        
+        .code-block .function {
+            color: #f59e0b;
+        }
+        
+        .code-block .number {
+            color: #8b5cf6;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+        }
+        
+        .quiz-option.selected {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: rgba(0, 245, 255, 0.5);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">Py</span>
+                    </div>
+                    <h1 class="text-xl font-bold gradient-text-green">Python学习中心</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="practice.html" class="nav-link">SQL训练营</a>
+                    <a href="#" class="nav-link active">Python中心</a>
+                    <a href="all-practice.html" class="nav-link">综合练习</a>
+                    <a href="interactive.html" class="nav-link">互动练习</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="showMobileApp()">移动版</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">👤</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <div class="flex pt-16 min-h-screen">
+        <!-- 侧边栏 -->
+        <div class="sidebar w-80 p-6 overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-white mb-4">学习进度</h2>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-300">总体进度</span>
+                            <span class="text-cyan-400">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-300">已完成课题</span>
+                        <span class="text-green-400">0/7</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-white mb-4">课题列表</h3>
+                <div class="space-y-2">
+                    <div class="chapter-item active" onclick="loadChapter(1)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题一</h4>
+                                <p class="text-gray-400 text-xs">算法设计与Python基础</p>
+                            </div>
+                            <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">10课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(2)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题二</h4>
+                                <p class="text-gray-400 text-xs">程序测试与调试</p>
+                            </div>
+                            <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">8课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(3)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题三</h4>
+                                <p class="text-gray-400 text-xs">进阶控制结构</p>
+                            </div>
+                            <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">12课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(4)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题四</h4>
+                                <p class="text-gray-400 text-xs">子程序</p>
+                            </div>
+                            <span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded">9课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(5)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题五</h4>
+                                <p class="text-gray-400 text-xs">数据结构</p>
+                            </div>
+                            <span class="text-xs bg-pink-500/20 text-pink-300 px-2 py-1 rounded">15课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(6)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题六</h4>
+                                <p class="text-gray-400 text-xs">搜索与排序</p>
+                            </div>
+                            <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded">11课时</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-item" onclick="loadChapter(7)">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">课题七</h4>
+                                <p class="text-gray-400 text-xs">文本文件处理</p>
+                            </div>
+                            <span class="text-xs bg-teal-500/20 text-teal-300 px-2 py-1 rounded">7课时</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">学习工具</h3>
+                <div class="space-y-3">
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openPythonEditor()">
+                        📝 Python编辑器
+                    </button>
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openDebugger()">
+                        🐛 调试工具
+                    </button>
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openVisualizer()">
+                        📊 算法可视化
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div id="chapter-content">
+                <!-- 默认显示课题一内容 -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold gradient-text-green mb-4">课题一：算法设计与Python程序基础</h1>
+                    <p class="text-gray-300 text-lg mb-6">
+                        学习算法的核心概念，掌握Python编程基础，为后续学习奠定坚实基础。
+                    </p>
+                    
+                    <!-- 学习目标 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">学习目标</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">理解演算法的定义和特性</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">掌握IPO循环分析方法</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">学会使用虚拟码和流程图</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">掌握Python基础语法</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">理解变量和数据类型</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">学会使用控制结构</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 核心概念 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">核心概念</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">1.1 演算法 (Algorithms)</h3>
+                            <p class="text-gray-300 mb-4">
+                                演算法是解决问题的步骤集合。一个好的演算法应该具备明确性、有限性、有效性和输入输出特性。
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">IPO循环</h4>
+                                    <p class="text-gray-300 text-sm mb-3">
+                                        IPO循环是问题分析的重要工具，包含三个步骤：
+                                    </p>
+                                    <ul class="space-y-2 text-sm text-gray-300">
+                                        <li><strong>Input (输入)：</strong>程序需要的数据</li>
+                                        <li><strong>Process (处理)：</strong>对输入数据的操作</li>
+                                        <li><strong>Output (输出)：</strong>程序产生的结果</li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">表示方法</h4>
+                                    <ul class="space-y-2 text-sm text-gray-300">
+                                        <li>• <strong>虚拟码 (Pseudocode)：</strong>类似自然语言的算法描述</li>
+                                        <li>• <strong>流程图 (Flowchart)：</strong>图形化表示算法步骤</li>
+                                        <li>• <strong>追踪表 (Trace Table)：</strong>逐步分析变量变化</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">1.2 Python程序基础</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">开发环境</h4>
+                                    <p class="text-gray-300 text-sm mb-3">
+                                        推荐使用Thonny IDE进行Python开发，它提供了友好的界面和调试功能。
+                                    </p>
+                                    
+                                    <h4 class="font-semibold text-white mb-2">基本语法</h4>
+                                    <ul class="space-y-1 text-sm text-gray-300">
+                                        <li>• 使用 <code class="text-cyan-400">#</code> 进行注释</li>
+                                        <li>• 缩进表示代码块层级</li>
+                                        <li>• 变量命名遵循特定规则</li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold text-white mb-2">数据类型</h4>
+                                    <ul class="space-y-1 text-sm text-gray-300">
+                                        <li>• <code class="text-cyan-400">int</code> - 整数类型</li>
+                                        <li>• <code class="text-cyan-400">float</code> - 浮点数类型</li>
+                                        <li>• <code class="text-cyan-400">str</code> - 字符串类型</li>
+                                        <li>• <code class="text-cyan-400">bool</code> - 布尔类型</li>
+                                    </ul>
+                                    
+                                    <h4 class="font-semibold text-white mb-2 mt-4">控制结构</h4>
+                                    <ul class="space-y-1 text-sm text-gray-300">
+                                        <li>• <code class="text-cyan-400">if-elif-else</code> - 条件判断</li>
+                                        <li>• <code class="text-cyan-400">for</code> - 循环遍历</li>
+                                        <li>• <code class="text-cyan-400">while</code> - 条件循环</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 代码示例 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">代码示例</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">示例1：BMI计算器</h3>
+                            <p class="text-gray-300 text-sm mb-4">
+                                这是一个简单的BMI计算器，展示了IPO循环的应用。
+                            </p>
+                            <div class="code-block">
+<span class="comment"># BMI计算器 - 展示IPO循环</span>
+<span class="comment"># Input: 获取用户输入的身高和体重</span>
+height = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"请输入身高(米): "</span>))
+weight = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"请输入体重(千克): "</span>))
+
+<span class="comment"># Process: 计算BMI</span>
+bmi = weight / (height ** <span class="number">2</span>)
+
+<span class="comment"># Output: 显示结果和健康状况</span>
+<span class="function">print</span>(<span class="string">f"您的BMI是: {bmi:.2f}"</span>)
+
+<span class="keyword">if</span> bmi < <span class="number">18.5</span>:
+    <span class="function">print</span>(<span class="string">"体重过轻"</span>)
+<span class="keyword">elif</span> bmi < <span class="number">24</span>:
+    <span class="function">print</span>(<span class="string">"体重正常"</span>)
+<span class="keyword">elif</span> bmi < <span class="number">28</span>:
+    <span class="function">print</span>(<span class="string">"体重超重"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"肥胖"</span>)
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">示例2：列表操作</h3>
+                            <p class="text-gray-300 text-sm mb-4">
+                                演示Python列表的基本操作，包括添加、删除和遍历元素。
+                            </p>
+                            <div class="code-block">
+<span class="comment"># 列表示例 - 学生成绩管理</span>
+scores = [<span class="number">85</span>, <span class="number">92</span>, <span class="number">78</span>, <span class="number">96</span>, <span class="number">88</span>]
+
+<span class="comment"># 添加新成绩</span>
+scores.<span class="function">append</span>(<span class="number">90</span>)
+<span class="function">print</span>(<span class="string">f"添加后: {scores}"</span>)
+
+<span class="comment"># 计算平均分</span>
+average = <span class="function">sum</span>(scores) / <span class="function">len</span>(scores)
+<span class="function">print</span>(<span class="string">f"平均分: {average:.2f}"</span>)
+
+<span class="comment"># 找出最高分和最低分</span>
+max_score = <span class="function">max</span>(scores)
+min_score = <span class="function">min</span>(scores)
+<span class="function">print</span>(<span class="string">f"最高分: {max_score}, 最低分: {min_score}"</span>)
+
+<span class="comment"># 遍历列表并显示</span>
+<span class="keyword">for</span> i, score <span class="keyword">in</span> <span class="function">enumerate</span>(scores, <span class="number">1</span>):
+    <span class="function">print</span>(<span class="string">f"学生{i}: {score}分"</span>)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 实践练习 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">实践练习</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">练习1：简单计算器</h3>
+                            <p class="text-gray-300 text-sm mb-4">
+                                编写一个简单的计算器程序，能够进行加减乘除四则运算。
+                            </p>
+                            <div class="code-editor mb-4">
+                                <textarea id="calculator-code" placeholder="# 在这里编写你的计算器代码..."></textarea>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button class="btn-primary px-4 py-2 text-sm" onclick="runCode('calculator')">
+                                    运行代码
+                                </button>
+                                <button class="btn-secondary px-4 py-2 text-sm" onclick="showHint('calculator')">
+                                    查看提示
+                                </button>
+                                <button class="btn-secondary px-4 py-2 text-sm" onclick="showSolution('calculator')">
+                                    查看答案
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-3">练习2：成绩统计</h3>
+                            <p class="text-gray-300 text-sm mb-4">
+                                编写程序统计一组学生成绩，计算平均分、最高分和最低分。
+                            </p>
+                            <div class="code-editor mb-4">
+                                <textarea id="grades-code" placeholder="# 在这里编写你的成绩统计代码..."></textarea>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button class="btn-primary px-4 py-2 text-sm" onclick="runCode('grades')">
+                                    运行代码
+                                </button>
+                                <button class="btn-secondary px-4 py-2 text-sm" onclick="showHint('grades')">
+                                    查看提示
+                                </button>
+                                <button class="btn-secondary px-4 py-2 text-sm" onclick="showSolution('grades')">
+                                    查看答案
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 知识测验 -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-xl font-semibold text-white mb-4">知识测验</h2>
+                        
+                        <div id="quiz-container">
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-white mb-3">问题1：Python中用于单行注释的符号是？</h3>
+                                <div class="space-y-2">
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        <span class="font-mono">//</span> - 双斜杠
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, true)">
+                                        <span class="font-mono">#</span> - 井号
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        <span class="font-mono">/* */</span> - 斜杠星号
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        <span class="font-mono">--</span> - 双减号
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-white mb-3">问题2：以下哪个不是Python的基本数据类型？</h3>
+                                <div class="space-y-2">
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        int - 整数类型
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        float - 浮点数类型
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, true)">
+                                        char - 字符类型
+                                    </div>
+                                    <div class="quiz-option" onclick="selectOption(this, false)">
+                                        bool - 布尔类型
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="btn-primary px-6 py-2" onclick="submitQuiz()">
+                                    提交答案
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        // Python课程数据
+        const pythonChapters = {
+            1: {
+                title: "课题一：算法设计与Python程序基础",
+                content: "算法概念、IPO循环、Python基础语法",
+                topics: ["算法定义", "IPO循环", "Python环境", "基础语法", "数据类型", "控制结构"]
+            },
+            2: {
+                title: "课题二：程序测试与调试",
+                content: "错误类型、调试工具、测试方法",
+                topics: ["错误类型", "调试工具", "测试方法", "异常处理", "程序追踪"]
+            },
+            3: {
+                title: "课题三：进阶控制结构",
+                content: "嵌套结构、循环优化、复杂逻辑",
+                topics: ["嵌套条件", "嵌套循环", "循环优化", "复杂逻辑", "算法设计"]
+            },
+            4: {
+                title: "课题四：子程序",
+                content: "函数定义、参数传递、递归",
+                topics: ["函数定义", "参数传递", "变量作用域", "递归", "模块化设计"]
+            },
+            5: {
+                title: "课题五：数据结构",
+                content: "数组、链表、栈、队列",
+                topics: ["数组", "链表", "栈", "队列", "树结构", "图结构"]
+            },
+            6: {
+                title: "课题六：搜索与排序",
+                content: "线性搜索、二分搜索、排序算法",
+                topics: ["线性搜索", "二分搜索", "选择排序", "插入排序", "快速排序"]
+            },
+            7: {
+                title: "课题七：文本文件处理",
+                content: "文件读写、字符串处理、CSV操作",
+                topics: ["文件读写", "字符串处理", "CSV操作", "文本分析", "数据处理"]
+            }
+        };
+        
+        let currentChapter = 1;
+        let pythonEditor = null;
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePythonEditor();
+            loadChapter(1);
+        });
+        
+        // 初始化Python编辑器
+        function initializePythonEditor() {
+            const editors = document.querySelectorAll('textarea[id$="-code"]');
+            editors.forEach(editorElement => {
+                if (typeof CodeMirror !== 'undefined') {
+                    const editor = CodeMirror.fromTextArea(editorElement, {
+                        mode: 'text/x-python',
+                        theme: 'monokai',
+                        lineNumbers: true,
+                        autoCloseBrackets: true,
+                        matchBrackets: true,
+                        indentUnit: 4,
+                        tabSize: 4,
+                        lineWrapping: true,
+                        extraKeys: {
+                            'Tab': function(cm) {
+                                cm.replaceSelection('    ');
+                            }
+                        }
+                    });
+                    
+                    // 保存编辑器实例
+                    if (editorElement.id === 'calculator-code') {
+                        window.calculatorEditor = editor;
+                    } else if (editorElement.id === 'grades-code') {
+                        window.gradesEditor = editor;
+                    }
+                }
+            });
+        }
+        
+        // 加载章节内容
+        function loadChapter(chapterNum) {
+            currentChapter = chapterNum;
+            
+            // 更新侧边栏状态
+            document.querySelectorAll('.chapter-item').forEach((item, index) => {
+                item.classList.remove('active');
+                if (index + 1 === chapterNum) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 这里可以加载不同章节的内容
+            // 目前显示的是课题一的静态内容
+            showNotification(`正在加载${pythonChapters[chapterNum].title}...`, 'success');
+        }
+        
+        // 运行代码
+        function runCode(exerciseType) {
+            let editor;
+            if (exerciseType === 'calculator') {
+                editor = window.calculatorEditor;
+            } else if (exerciseType === 'grades') {
+                editor = window.gradesEditor;
+            }
+            
+            if (!editor) {
+                showNotification('编辑器未初始化', 'error');
+                return;
+            }
+            
+            const code = editor.getValue().trim();
+            if (!code) {
+                showNotification('请输入代码', 'error');
+                return;
+            }
+            
+            // 模拟代码执行
+            const result = simulatePythonExecution(code);
+            displayExecutionResult(result);
+            
+            showNotification('代码运行成功！', 'success');
+        }
+        
+        // 模拟Python代码执行
+        function simulatePythonExecution(code) {
+            // 简单的代码验证和模拟执行
+            const lines = code.split('\n');
+            const hasInput = lines.some(line => line.includes('input('));
+            const hasPrint = lines.some(line => line.includes('print('));
+            
+            if (hasInput) {
+                return {
+                    success: true,
+                    output: '请输入身高(米): 1.75\n请输入体重(千克): 70\n您的BMI是: 22.86\n体重正常',
+                    message: '程序运行成功，等待用户输入'
+                };
+            } else if (hasPrint) {
+                return {
+                    success: true,
+                    output: '添加后: [85, 92, 78, 96, 88, 90]\n平均分: 88.17\n最高分: 96, 最低分: 78\n学生1: 85分\n学生2: 92分\n学生3: 78分\n学生4: 96分\n学生5: 88分\n学生6: 90分',
+                    message: '程序运行成功'
+                };
+            } else {
+                return {
+                    success: true,
+                    output: '程序运行完成（无输出）',
+                    message: '代码语法正确'
+                };
+            }
+        }
+        
+        // 显示执行结果
+        function displayExecutionResult(result) {
+            // 这里可以显示代码执行结果
+            console.log('执行结果:', result);
+        }
+        
+        // 显示提示
+        function showHint(exerciseType) {
+            const hints = {
+                calculator: '提示：使用input()获取用户输入，用float()转换数据类型，然后进行四则运算。',
+                grades: '提示：使用列表存储成绩，用sum()和len()计算平均分，用max()和min()找出最高最低分。'
+            };
+            
+            showNotification(hints[exerciseType] || '提示即将推出', 'success', 5000);
+        }
+        
+        // 显示答案
+        function showSolution(exerciseType) {
+            showNotification('答案即将推出', 'success');
+        }
+        
+        // 选择测验选项
+        function selectOption(element, isCorrect) {
+            // 清除其他选项的选中状态
+            const allOptions = element.parentNode.querySelectorAll('.quiz-option');
+            allOptions.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // 选中当前选项
+            element.classList.add('selected');
+            
+            // 保存答案
+            element.dataset.correct = isCorrect;
+        }
+        
+        // 提交测验
+        function submitQuiz() {
+            const selectedOptions = document.querySelectorAll('.quiz-option.selected');
+            let correctCount = 0;
+            let totalCount = document.querySelectorAll('.quiz-option').length / 4; // 每题4个选项
+            
+            selectedOptions.forEach(option => {
+                const isCorrect = option.dataset.correct === 'true';
+                if (isCorrect) {
+                    correctCount++;
+                    option.classList.add('correct');
+                } else {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            const score = Math.round((correctCount / totalCount) * 100);
+            showNotification(`测验完成！得分：${score}%`, score >= 60 ? 'success' : 'error');
+        }
+        
+        // 打开Python编辑器
+        function openPythonEditor() {
+            showNotification('Python编辑器即将推出', 'success');
+        }
+        
+        // 打开调试工具
+        function openDebugger() {
+            showNotification('调试工具即将推出', 'success');
+        }
+        
+        // 打开算法可视化
+        function openVisualizer() {
+            showNotification('算法可视化即将推出', 'success');
+        }
+        
+        // 显示移动版
+        function showMobileApp() {
+            window.location.href = 'mobile-app.html';
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+    </script>
+</body>
+</html>

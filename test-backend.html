@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>後端服務測試</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">後端服務連接測試</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">測試連接</h2>
+            <button onclick="testConnection()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                測試連接
+            </button>
+            <div id="test-result" class="mt-4"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">服務狀態</h2>
+            <div class="space-y-2">
+                <div>
+                    <strong>後端地址：</strong>
+                    <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:5000</code>
+                </div>
+                <div>
+                    <strong>健康檢查：</strong>
+                    <a href="http://localhost:5000/health" target="_blank" class="text-blue-600 hover:underline">
+                        http://localhost:5000/health
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <h3 class="font-semibold text-amber-900 mb-2">如果無法連接：</h3>
+            <ol class="list-decimal list-inside space-y-1 text-sm text-amber-800">
+                <li>確保後端服務正在運行：<code>python app.py</code></li>
+                <li>檢查端口5000是否被占用</li>
+                <li>查看後端服務終端的錯誤信息</li>
+                <li>確保防火牆沒有阻止連接</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testConnection() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = '<div class="text-blue-600">正在測試連接...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 rounded p-4">
+                        <div class="text-emerald-800 font-semibold">✅ 連接成功！</div>
+                        <div class="text-sm text-emerald-700 mt-2">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded p-4">
+                        <div class="text-red-800 font-semibold">❌ 連接失敗</div>
+                        <div class="text-sm text-red-700 mt-2">
+                            <p>錯誤：${error.message}</p>
+                            <p class="mt-2">請確保後端服務正在運行：</p>
+                            <code class="bg-gray-100 px-2 py-1 rounded block mt-2">python app.py</code>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 頁面加載時自動測試
+        window.addEventListener('load', function() {
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>
+

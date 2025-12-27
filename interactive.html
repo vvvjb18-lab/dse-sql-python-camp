@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互动练习 - SQL & Python 训练营</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sql/sql.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #00f5ff;
+            --primary-purple: #6366f1;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --gradient-primary: linear-gradient(135deg, #00f5ff 0%, #6366f1 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        body {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-green {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 1px;
+        }
+        
+        .exercise-type-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .exercise-type-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .drag-item {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+        
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .drop-zone {
+            min-height: 120px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--primary-blue);
+            background: rgba(0, 245, 255, 0.1);
+        }
+        
+        .drop-zone.correct {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .drop-zone.incorrect {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .sortable-item {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .sortable-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .sortable-item.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00f5ff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 4;
+            fill: transparent;
+            r: 36;
+            cx: 40;
+            cy: 40;
+        }
+        
+        .progress-ring-fill {
+            stroke: var(--primary-blue);
+            stroke-width: 4;
+            fill: transparent;
+            r: 36;
+            cx: 40;
+            cy: 40;
+            stroke-dasharray: 226;
+            stroke-dashoffset: 226;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">🎯</span>
+                    </div>
+                    <h1 class="text-xl font-bold gradient-text-green">互动练习</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="practice.html" class="nav-link">SQL训练营</a>
+                    <a href="python-center-complete.html" class="nav-link">Python中心</a>
+                    <a href="all-practice.html" class="nav-link">综合练习</a>
+                    <a href="#" class="nav-link active">互动练习</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="showMobileApp()">移动版</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">👤</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <div class="pt-20 pb-8">
+        <!-- 头部区域 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text-green mb-4">互动练习平台</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">
+                    通过拖拽、填空、排序等多种互动方式学习SQL和Python，让编程学习变得更有趣、更高效。
+                </p>
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card p-6 text-center">
+                    <div class="text-2xl font-bold gradient-text-green" id="total-exercises">15</div>
+                    <div class="text-sm text-gray-300 mt-1">互动练习</div>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-2xl font-bold gradient-text-green" id="completed-exercises">0</div>
+                    <div class="text-sm text-gray-300 mt-1">已完成</div>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-2xl font-bold gradient-text-green" id="accuracy-rate">0%</div>
+                    <div class="text-sm text-gray-300 mt-1">正确率</div>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-2xl font-bold gradient-text-green" id="streak-days">0</div>
+                    <div class="text-sm text-gray-300 mt-1">连续天数</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 题目表格选择 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">题目列表</h3>
+                <button onclick="toggleQuestionTable()" class="btn-secondary px-4 py-2 text-sm">
+                    <span id="table-toggle-text">显示题目表格</span>
+                </button>
+            </div>
+            <div id="question-table-container" class="hidden mb-8">
+                <div class="glass-card p-6">
+                    <div class="mb-4">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <select id="filter-type" class="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" onchange="filterQuestions()">
+                                <option value="all">所有类型</option>
+                                <option value="drag-drop">拖拽排序</option>
+                                <option value="fill-blank">填空练习</option>
+                                <option value="multiple-choice">选择题</option>
+                                <option value="code-completion">代码补全</option>
+                            </select>
+                            <select id="filter-language" class="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" onchange="filterQuestions()">
+                                <option value="all">所有语言</option>
+                                <option value="SQL">SQL</option>
+                                <option value="Python">Python</option>
+                            </select>
+                            <button onclick="resetFilters()" class="btn-secondary px-4 py-2 text-sm">重置筛选</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left py-3 px-4 text-gray-300">类型</th>
+                                    <th class="text-left py-3 px-4 text-gray-300">题目</th>
+                                    <th class="text-left py-3 px-4 text-gray-300">语言</th>
+                                    <th class="text-left py-3 px-4 text-gray-300">状态</th>
+                                    <th class="text-left py-3 px-4 text-gray-300">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="question-table-body">
+                                <!-- 题目列表将动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 练习类型选择 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <h3 class="text-xl font-semibold text-white mb-6">选择练习类型</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('drag-drop')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🔄</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">拖拽排序</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        拖拽SQL语句或Python代码片段到正确位置，学习语法结构和逻辑顺序。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">8个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('fill-blank')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">✏️</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">填空练习</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        填写SQL查询或Python代码中的空白部分，巩固语法知识和关键字记忆。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">5个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('multiple-choice')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🎯</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">选择题</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        选择正确的SQL函数、Python语法或数据库概念，测试理论知识掌握程度。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">10个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('code-completion')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">💻</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">代码补全</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        补全不完整的代码片段，学习正确的语法结构和最佳实践。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded">6个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('error-finding')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-red-400 to-pink-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🐛</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">错误查找</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        在给定的代码中找出语法错误或逻辑错误，培养调试和问题解决能力。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded">7个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-type-card glass-card p-6" onclick="startExercise('mixed-challenge')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🏆</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-white">混合挑战</h4>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4">
+                        综合多种练习类型的挑战模式，测试全面的编程技能和知识掌握。
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">3个挑战</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 今日推荐 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <h3 class="text-xl font-semibold text-white mb-6">今日推荐</h3>
+            <div class="glass-card p-6">
+                <div class="flex items-start">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mr-6 flex-shrink-0">
+                        <span class="text-white text-2xl">🔥</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-xl font-semibold text-white mb-2">SQL JOIN 拖拽挑战</h4>
+                        <p class="text-gray-300 mb-4">
+                            通过拖拽操作学习INNER JOIN、LEFT JOIN、RIGHT JOIN的正确语法和使用场景，掌握多表连接的核心概念。
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <button class="btn-primary px-6 py-2" onclick="startRecommendedExercise()">开始挑战</button>
+                            <span class="text-sm text-gray-400">⏱️ 约15分钟</span>
+                            <span class="text-sm text-gray-400">📊 中级难度</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 学习进度 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <h3 class="text-xl font-semibold text-white mb-6">学习进度</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">SQL 练习进度</h4>
+                        <span class="text-sm text-gray-400">8/15 完成</span>
+                    </div>
+                    <div class="progress-bar mb-2">
+                        <div class="progress-fill" style="width: 53%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-300">正确率: 87%</span>
+                        <span class="text-gray-300">平均用时: 3.2分钟</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">Python 练习进度</h4>
+                        <span class="text-sm text-gray-400">5/15 完成</span>
+                    </div>
+                    <div class="progress-bar mb-2">
+                        <div class="progress-fill" style="width: 33%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-300">正确率: 92%</span>
+                        <span class="text-gray-300">平均用时: 2.8分钟</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 练习模态框 -->
+    <div id="exercise-modal" class="modal">
+        <div class="modal-content w-full max-w-4xl">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold gradient-text-green" id="exercise-title">互动练习</h3>
+                    <div class="flex items-center space-x-4 mt-2">
+                        <span class="text-sm text-gray-400" id="exercise-progress">题目 1 / 1</span>
+                        <label class="flex items-center space-x-2 text-sm text-gray-400">
+                            <input type="checkbox" id="auto-next" checked>
+                            <span>自动跳转下一题</span>
+                        </label>
+                    </div>
+                </div>
+                <button onclick="closeExerciseModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            <div id="exercise-content">
+                <!-- 练习内容将动态加载 -->
+            </div>
+            <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-700">
+                <button onclick="previousQuestion()" class="btn-secondary px-6 py-2" id="prev-btn" disabled>上一题</button>
+                <button onclick="nextQuestion()" class="btn-primary px-6 py-2" id="next-btn">下一题</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- 引入用户API -->
+    <script src="user-api.js"></script>
+    
+    <script>
+        // 全局变量
+        let currentExerciseType = '';
+        let currentQuestionIndex = 0;
+        let userProgress = JSON.parse(localStorage.getItem('interactiveProgress') || '{}');
+        let exerciseData = {};
+        let allQuestions = []; // 所有题目的扁平化列表
+        let filteredQuestions = []; // 筛选后的题目列表
+        
+        // 加载进度（优先从后端，如果失败则使用本地）
+        async function loadProgress() {
+            // 先尝试从后端加载
+            if (typeof UserAPI !== 'undefined' && UserAPI.isLoggedIn && UserAPI.isLoggedIn()) {
+                try {
+                    const result = await UserAPI.getInteractiveProgress();
+                    if (result.success && result.progress) {
+                        userProgress = result.progress;
+                        localStorage.setItem('interactiveProgress', JSON.stringify(userProgress));
+                        console.log('从后端加载进度成功');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('从后端加载进度失败:', error);
+                }
+            }
+            
+            // 如果后端加载失败，使用本地存储
+            const localProgress = localStorage.getItem('interactiveProgress');
+            if (localProgress) {
+                userProgress = JSON.parse(localProgress);
+                console.log('从本地加载进度');
+            }
+        }
+        
+        // 保存进度到后端
+        async function saveProgress() {
+            // 先保存到localStorage（立即反馈）
+            localStorage.setItem('interactiveProgress', JSON.stringify(userProgress));
+            
+            // 如果已登录，尝试保存到后端
+            if (typeof UserAPI !== 'undefined' && UserAPI.isLoggedIn && UserAPI.isLoggedIn()) {
+                try {
+                    const result = await UserAPI.saveInteractiveProgress(userProgress);
+                    if (result.success) {
+                        console.log('进度已保存到后端');
+                    } else if (result.saved_locally) {
+                        console.log('后端保存失败，已保存到本地');
+                    }
+                } catch (error) {
+                    console.error('保存进度到后端失败:', error);
+                }
+            }
+        }
+        
+        // 练习数据
+        const exercises = {
+            'drag-drop': [
+                {
+                    title: 'SQL JOIN 语句排序',
+                    description: '将以下SQL JOIN语句的组成部分拖拽到正确位置',
+                    items: ['SELECT * FROM users', 'LEFT JOIN orders', 'ON users.id = orders.user_id', 'WHERE users.active = 1'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '正确的JOIN语句顺序是：SELECT -> FROM -> JOIN -> ON -> WHERE'
+                },
+                {
+                    title: 'Python 函数定义排序',
+                    description: '将Python函数定义的各个部分按正确顺序排列',
+                    items: ['def calculate_area(radius):', 'return area', 'area = 3.14 * radius ** 2', ' """计算圆的面积"""'],
+                    correctOrder: [0, 3, 2, 1],
+                    explanation: 'Python函数定义顺序：def -> 文档字符串 -> 函数体 -> return'
+                },
+                {
+                    title: 'SQL SELECT 完整查询排序',
+                    description: '将SQL SELECT查询语句按正确顺序排列',
+                    items: ['SELECT name, score', 'FROM students', 'WHERE score >= 80', 'ORDER BY score DESC'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: 'SQL查询顺序：SELECT -> FROM -> WHERE -> ORDER BY'
+                },
+                {
+                    title: 'Python if-else 条件语句排序',
+                    description: '将Python条件语句按正确顺序排列',
+                    items: ['if age >= 18:', 'print("成年人")', 'else:', 'print("未成年人")'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: 'Python条件语句顺序：if -> if代码块 -> else -> else代码块'
+                },
+                {
+                    title: 'SQL GROUP BY 聚合查询排序',
+                    description: '将SQL聚合查询语句按正确顺序排列',
+                    items: ['SELECT class, AVG(score)', 'FROM students', 'GROUP BY class', 'HAVING AVG(score) > 75'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: 'SQL聚合查询顺序：SELECT -> FROM -> GROUP BY -> HAVING'
+                },
+                {
+                    title: 'Python 列表推导式排序',
+                    description: '将Python列表推导式按正确顺序排列',
+                    items: ['squares = [', 'x**2', 'for x in range(10)', 'if x % 2 == 0]'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '列表推导式顺序：开始 -> 表达式 -> for循环 -> 条件（可选）-> 结束'
+                },
+                {
+                    title: 'SQL 子查询排序',
+                    description: '将SQL子查询语句按正确顺序排列',
+                    items: ['SELECT name', 'FROM students', 'WHERE score >', '(SELECT AVG(score) FROM students)'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '子查询顺序：外层SELECT -> FROM -> WHERE -> 子查询'
+                },
+                {
+                    title: 'Python try-except 异常处理排序',
+                    description: '将Python异常处理语句按正确顺序排列',
+                    items: ['try:', 'result = 10 / 0', 'except ZeroDivisionError:', 'print("除数不能为零")'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '异常处理顺序：try -> 可能出错的代码 -> except -> 异常处理代码'
+                },
+                {
+                    title: 'Python 质数判断算法排序（课题一）',
+                    description: '将质数判断算法的代码按正确顺序排列',
+                    items: ['if n < 2:', 'return False', 'for i in range(2, int(n**0.5) + 1):', 'if n % i == 0:'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '质数判断：先检查小于2的情况 -> 返回False -> 循环检查 -> 检查是否能整除'
+                },
+                {
+                    title: 'Python 十进制转二进制排序（课题一）',
+                    description: '将十进制转二进制的算法按正确顺序排列',
+                    items: ['binary = ""', 'while n > 0:', 'binary = str(n % 2) + binary', 'n = n // 2'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '转换顺序：初始化 -> 循环条件 -> 取余数 -> 整除'
+                },
+                {
+                    title: 'Python 嵌套循环排序（课题三）',
+                    description: '将嵌套循环的九九乘法表代码按正确顺序排列',
+                    items: ['for i in range(1, 11):', 'for j in range(1, 11):', 'print(f"{i} x {j} = {i*j}", end="\\t")', 'print()'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '嵌套循环：外层循环 -> 内层循环 -> 打印结果 -> 换行'
+                },
+                {
+                    title: 'Python 函数调用排序（课题四）',
+                    description: '将函数定义和调用的代码按正确顺序排列',
+                    items: ['def calculate_average(numbers):', 'return sum(numbers) / len(numbers)', 'numbers = [10, 20, 30]', 'avg = calculate_average(numbers)'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '函数使用顺序：定义函数 -> 函数体 -> 准备数据 -> 调用函数'
+                },
+                {
+                    title: 'Python 堆栈操作排序（课题五）',
+                    description: '将堆栈的push和pop操作按正确顺序排列',
+                    items: ['stack = []', 'stack.append(item)', 'if len(stack) == 0:', 'return stack.pop()'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '堆栈操作：初始化 -> 入栈 -> 检查空栈 -> 出栈'
+                },
+                {
+                    title: 'Python 二分查找排序（课题六）',
+                    description: '将二分查找算法的代码按正确顺序排列',
+                    items: ['left, right = 0, len(arr) - 1', 'while left <= right:', 'mid = (left + right) // 2', 'if arr[mid] == target:'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '二分查找：初始化边界 -> 循环条件 -> 计算中点 -> 比较目标值'
+                },
+                {
+                    title: 'Python 文件读取排序（课题七）',
+                    description: '将文件读取的代码按正确顺序排列',
+                    items: ['with open(filename, "r") as f:', 'for line in f:', 'row = line.strip().split(",")', 'data.append(row)'],
+                    correctOrder: [0, 1, 2, 3],
+                    explanation: '文件读取：打开文件 -> 遍历行 -> 处理数据 -> 添加到列表'
+                }
+            ],
+            'fill-blank': [
+                {
+                    title: 'SQL 查询填空',
+                    description: '填写正确的SQL关键字',
+                    question: 'SELECT name, email ___ users ___ age > 18;',
+                    answer: 'FROM WHERE',
+                    explanation: 'FROM指定表名，WHERE添加条件'
+                },
+                {
+                    title: 'Python 循环填空',
+                    description: '填写正确的Python循环语法',
+                    question: 'for i in ___ 10):\n    print(f"第{i}次循环")',
+                    answer: 'range(',
+                    explanation: 'Python使用range()函数生成数字序列'
+                },
+                {
+                    title: 'SQL 聚合函数填空',
+                    description: '填写正确的SQL聚合函数',
+                    question: 'SELECT ___ (score) AS avg_score, ___ (score) AS max_score FROM students;',
+                    answer: 'AVG MAX',
+                    explanation: 'AVG()计算平均值，MAX()找出最大值'
+                },
+                {
+                    title: 'Python 列表操作填空',
+                    description: '填写正确的Python列表方法',
+                    question: 'numbers = [1, 2, 3]\nnumbers.___(4)  # 添加元素\nnumbers.___(0)  # 删除第一个元素',
+                    answer: 'append pop',
+                    explanation: 'append()在列表末尾添加元素，pop()删除并返回指定位置的元素'
+                },
+                {
+                    title: 'SQL 连接查询填空',
+                    description: '填写正确的SQL连接关键字',
+                    question: 'SELECT u.name, o.total FROM users u ___ JOIN orders o ___ u.id = o.user_id;',
+                    answer: 'INNER ON',
+                    explanation: 'INNER JOIN进行内连接，ON指定连接条件'
+                },
+                {
+                    title: 'Python 字典操作填空',
+                    description: '填写正确的Python字典操作',
+                    question: 'student = {"name": "张三", "age": 20}\nprint(student.___("name"))  # 获取值\nstudent.___("score", 95)  # 添加键值对',
+                    answer: 'get update',
+                    explanation: 'get()获取字典值，update()更新字典'
+                },
+                {
+                    title: 'SQL 排序填空',
+                    description: '填写正确的SQL排序关键字',
+                    question: 'SELECT * FROM products ___ BY price ___;',
+                    answer: 'ORDER DESC',
+                    explanation: 'ORDER BY用于排序，DESC表示降序'
+                },
+                {
+                    title: 'Python 字符串方法填空',
+                    description: '填写正确的Python字符串方法',
+                    question: 'text = "  Hello World  "\ncleaned = text.___()  # 去除首尾空格\nupper_text = text.___()  # 转为大写',
+                    answer: 'strip upper',
+                    explanation: 'strip()去除首尾空白，upper()转为大写'
+                },
+                {
+                    title: 'Python 输入输出填空（课题一）',
+                    description: '填写正确的Python输入输出函数',
+                    question: 'name = ___(___("请输入姓名："))\n___(f"您好，{name}！")',
+                    answer: 'input print',
+                    explanation: 'input()获取用户输入，print()输出信息'
+                },
+                {
+                    title: 'Python 质数判断填空（课题一）',
+                    description: '填写正确的质数判断逻辑',
+                    question: 'def is_prime(n):\n    if n ___ 2:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n ___ i == 0:',
+                    answer: '< %',
+                    explanation: '< 比较大小，% 取模运算'
+                },
+                {
+                    title: 'Python 异常处理填空（课题二）',
+                    description: '填写正确的异常处理关键字',
+                    question: '___:  \n    result = 10 / 0\n___ ZeroDivisionError:\n    print("除零错误")',
+                    answer: 'try except',
+                    explanation: 'try开始异常处理，except捕获特定异常'
+                },
+                {
+                    title: 'Python 嵌套循环填空（课题三）',
+                    description: '填写正确的嵌套循环结构',
+                    question: 'for i in range(1, 11):\n    for j in range(1, 11):\n        print(f"{i} x {j} = {i*j}", ___="\\t")\n    ___()',
+                    answer: 'end print',
+                    explanation: 'end参数控制print不换行，print()用于换行'
+                },
+                {
+                    title: 'Python 函数定义填空（课题四）',
+                    description: '填写正确的函数定义关键字',
+                    question: '___ calculate_sum(a, b):\n    ___ a + b',
+                    answer: 'def return',
+                    explanation: 'def定义函数，return返回值'
+                },
+                {
+                    title: 'Python 列表操作填空（课题五）',
+                    description: '填写正确的列表操作方法',
+                    question: 'stack = []\nstack.___(item)  # 入栈\nitem = stack.___()  # 出栈',
+                    answer: 'append pop',
+                    explanation: 'append()添加到末尾，pop()移除并返回最后一个元素'
+                },
+                {
+                    title: 'Python 查找算法填空（课题六）',
+                    description: '填写正确的查找算法逻辑',
+                    question: 'def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left ___ right:\n        mid = (left + right) ___ 2',
+                    answer: '<= //',
+                    explanation: '<= 循环条件，// 整数除法'
+                },
+                {
+                    title: 'Python 文件操作填空（课题七）',
+                    description: '填写正确的文件操作关键字',
+                    question: '__ open("data.txt", "r") as f:\n    data = f.___()',
+                    answer: 'with read',
+                    explanation: 'with管理文件资源，read()读取文件内容'
+                },
+                {
+                    title: 'Python 凯撒密码填空（课题七）',
+                    description: '填写正确的字符编码函数',
+                    question: 'def caesar_cipher(text, shift):\n    base = ___(char) if char.isupper() else ___(char)\n    result += ___(...)',
+                    answer: 'ord ord chr',
+                    explanation: 'ord()获取字符ASCII码，chr()将ASCII码转为字符'
+                }
+            ],
+            'multiple-choice': [
+                {
+                    title: 'SQL 聚合函数',
+                    question: '以下哪个函数用于计算平均值？',
+                    options: ['COUNT()', 'SUM()', 'AVG()', 'MAX()'],
+                    correct: 2,
+                    explanation: 'AVG()函数用于计算列的平均值'
+                },
+                {
+                    title: 'Python 数据类型',
+                    question: '以下哪个是Python的不可变数据类型？',
+                    options: ['List', 'Dictionary', 'Tuple', 'Set'],
+                    correct: 2,
+                    explanation: 'Tuple(元组)是Python的不可变数据类型'
+                },
+                {
+                    title: 'SQL WHERE 子句',
+                    question: '以下哪个运算符用于模糊匹配？',
+                    options: ['=', 'LIKE', 'IN', 'BETWEEN'],
+                    correct: 1,
+                    explanation: 'LIKE运算符用于模式匹配，常配合%和_使用'
+                },
+                {
+                    title: 'Python 循环控制',
+                    question: '以下哪个关键字用于跳过当前循环迭代？',
+                    options: ['break', 'continue', 'pass', 'return'],
+                    correct: 1,
+                    explanation: 'continue跳过当前迭代，继续下一次循环'
+                },
+                {
+                    title: 'SQL JOIN 类型',
+                    question: '以下哪个JOIN会返回两个表的所有记录？',
+                    options: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL OUTER JOIN'],
+                    correct: 3,
+                    explanation: 'FULL OUTER JOIN返回两个表的所有记录'
+                },
+                {
+                    title: 'Python 函数参数',
+                    question: '以下哪个是Python的可变参数？',
+                    options: ['*args', '**kwargs', '两者都是', '两者都不是'],
+                    correct: 2,
+                    explanation: '*args和**kwargs都是可变参数，用于接收不定数量的参数'
+                },
+                {
+                    title: 'SQL 子查询',
+                    question: '子查询可以出现在以下哪个位置？',
+                    options: ['SELECT子句', 'FROM子句', 'WHERE子句', '以上都可以'],
+                    correct: 3,
+                    explanation: '子查询可以出现在SELECT、FROM、WHERE等多个位置'
+                },
+                {
+                    title: 'Python 列表推导式',
+                    question: '以下哪个列表推导式是正确的？',
+                    options: ['[x for x in range(5)]', '[x in range(5)]', '[x: for x in range(5)]', '[x for x: range(5)]'],
+                    correct: 0,
+                    explanation: '列表推导式语法：[表达式 for 变量 in 可迭代对象]'
+                },
+                {
+                    title: 'SQL 索引',
+                    question: '索引的主要作用是什么？',
+                    options: ['存储数据', '提高查询速度', '保证数据唯一性', '创建表结构'],
+                    correct: 1,
+                    explanation: '索引的主要作用是提高查询速度，减少全表扫描'
+                },
+                {
+                    title: 'Python 异常处理',
+                    question: '以下哪个异常表示除零错误？',
+                    options: ['ValueError', 'TypeError', 'ZeroDivisionError', 'IndexError'],
+                    correct: 2,
+                    explanation: 'ZeroDivisionError表示除零或模零错误'
+                },
+                {
+                    title: 'Python 算法基础（课题一）',
+                    question: '以下哪个是算法的基本特性？',
+                    options: ['明确性、有限性、有效性', '复杂性、无限性、随机性', '模糊性、无限性、有效性', '明确性、无限性、随机性'],
+                    correct: 0,
+                    explanation: '算法应具备明确性（步骤清晰）、有限性（有限步骤）、有效性（能解决问题）'
+                },
+                {
+                    title: 'Python 数据类型（课题一）',
+                    question: '以下哪个是Python的基本数据类型？',
+                    options: ['int, float, str, bool', 'int, double, string, boolean', 'integer, decimal, text, logic', 'number, decimal, text, bool'],
+                    correct: 0,
+                    explanation: 'Python的基本数据类型包括：int（整数）、float（浮点数）、str（字符串）、bool（布尔值）'
+                },
+                {
+                    title: 'Python 调试方法（课题二）',
+                    question: '以下哪个是Python常用的调试方法？',
+                    options: ['print()输出', '断点调试', '异常捕获', '以上都是'],
+                    correct: 3,
+                    explanation: 'Python调试可以使用print()、断点调试器、try-except异常捕获等多种方法'
+                },
+                {
+                    title: 'Python 嵌套结构（课题三）',
+                    question: '以下关于嵌套循环的说法正确的是？',
+                    options: ['外层循环执行一次，内层循环执行完整', '内层循环执行一次，外层循环执行完整', '内外层循环独立执行', '不能嵌套使用'],
+                    correct: 0,
+                    explanation: '嵌套循环中，外层循环每执行一次，内层循环会完整执行一遍'
+                },
+                {
+                    title: 'Python 函数参数（课题四）',
+                    question: '以下哪个是Python函数的必需参数？',
+                    options: ['位置参数', '关键字参数', '默认参数', '可变参数'],
+                    correct: 0,
+                    explanation: '位置参数是必需参数，调用时必须提供；其他参数都是可选的'
+                },
+                {
+                    title: 'Python 数据结构（课题五）',
+                    question: '以下哪个数据结构遵循后进先出（LIFO）原则？',
+                    options: ['栈（Stack）', '队列（Queue）', '列表（List）', '字典（Dictionary）'],
+                    correct: 0,
+                    explanation: '栈（Stack）遵循后进先出（LIFO）原则，最后进入的元素最先被取出'
+                },
+                {
+                    title: 'Python 查找算法（课题六）',
+                    question: '二分查找算法要求数据必须？',
+                    options: ['有序', '无序', '随机', '重复'],
+                    correct: 0,
+                    explanation: '二分查找算法要求数据必须是有序的，才能通过比较中点值来缩小搜索范围'
+                },
+                {
+                    title: 'Python 文件操作（课题七）',
+                    question: '使用with语句打开文件的优点是？',
+                    options: ['自动关闭文件', '提高读取速度', '支持大文件', '以上都是'],
+                    correct: 0,
+                    explanation: 'with语句会自动管理文件资源，确保文件在使用后自动关闭，避免资源泄漏'
+                },
+                {
+                    title: 'Python 排序算法（课题六）',
+                    question: '以下哪个排序算法的时间复杂度是O(n²)？',
+                    options: ['冒泡排序', '快速排序', '归并排序', '堆排序'],
+                    correct: 0,
+                    explanation: '冒泡排序的时间复杂度是O(n²)，其他选项的平均时间复杂度都是O(n log n)'
+                },
+                {
+                    title: 'Python 递归（课题四）',
+                    question: '递归函数必须包含？',
+                    options: ['递归终止条件', '无限循环', '全局变量', '异常处理'],
+                    correct: 0,
+                    explanation: '递归函数必须包含递归终止条件（基准情况），否则会导致无限递归'
+                },
+                {
+                    title: 'Python 字符串处理（课题七）',
+                    question: '以下哪个方法用于分割字符串？',
+                    options: ['split()', 'join()', 'strip()', 'replace()'],
+                    correct: 0,
+                    explanation: 'split()方法用于将字符串按指定分隔符分割成列表'
+                }
+            ],
+            'code-completion': [
+                {
+                    title: 'SQL 查询补全',
+                    description: '补全以下SQL查询语句',
+                    question: 'SELECT name, score FROM students WHERE score > ___ ORDER BY score ___;',
+                    blanks: [
+                        { placeholder: '输入分数阈值', answer: '80', type: 'number' },
+                        { placeholder: '输入排序方式', answer: 'DESC', type: 'keyword' }
+                    ],
+                    explanation: 'WHERE子句设置条件，ORDER BY指定排序方式'
+                },
+                {
+                    title: 'Python 函数补全',
+                    description: '补全以下Python函数',
+                    question: 'def calculate_average(numbers):\n    total = sum(numbers)\n    count = len(numbers)\n    return total ___ count',
+                    blanks: [
+                        { placeholder: '输入运算符', answer: '/', type: 'operator' }
+                    ],
+                    explanation: '使用除法运算符计算平均值'
+                },
+                {
+                    title: 'SQL 聚合查询补全',
+                    description: '补全以下SQL聚合查询',
+                    question: 'SELECT class, ___ (score) AS avg_score FROM students GROUP BY class HAVING ___ (score) > 75;',
+                    blanks: [
+                        { placeholder: '输入聚合函数', answer: 'AVG', type: 'function' },
+                        { placeholder: '再次输入聚合函数', answer: 'AVG', type: 'function' }
+                    ],
+                    explanation: 'AVG()计算平均值，HAVING用于过滤分组结果'
+                },
+                {
+                    title: 'Python 列表操作补全',
+                    description: '补全以下Python列表操作',
+                    question: 'numbers = [1, 2, 3, 4, 5]\neven_numbers = [x for x in numbers if x ___ 2 == 0]',
+                    blanks: [
+                        { placeholder: '输入运算符', answer: '%', type: 'operator' }
+                    ],
+                    explanation: '使用模运算符%判断是否为偶数'
+                },
+                {
+                    title: 'Python 质数判断补全（课题一）',
+                    description: '补全质数判断函数',
+                    question: 'def is_prime(n):\n    if n ___ 2:\n        return False\n    for i in range(2, int(n**___) + 1):',
+                    blanks: [
+                        { placeholder: '输入比较运算符', answer: '<', type: 'operator' },
+                        { placeholder: '输入指数', answer: '0.5', type: 'number' }
+                    ],
+                    explanation: '< 比较大小，0.5 表示平方根（n**0.5）'
+                },
+                {
+                    title: 'Python 异常处理补全（课题二）',
+                    description: '补全异常处理代码',
+                    question: '___:\n    result = 10 / 0\n___ ZeroDivisionError as e:\n    print(f"错误：{e}")',
+                    blanks: [
+                        { placeholder: '输入关键字', answer: 'try', type: 'keyword' },
+                        { placeholder: '输入关键字', answer: 'except', type: 'keyword' }
+                    ],
+                    explanation: 'try开始异常处理，except捕获特定异常'
+                },
+                {
+                    title: 'Python 嵌套循环补全（课题三）',
+                    description: '补全九九乘法表代码',
+                    question: 'for i in range(1, ___):\n    for j in range(1, ___):\n        print(f"{i} x {j} = {i*j}", end="\\t")\n    print()',
+                    blanks: [
+                        { placeholder: '输入数字', answer: '11', type: 'number' },
+                        { placeholder: '输入数字', answer: '11', type: 'number' }
+                    ],
+                    explanation: 'range(1, 11)生成1到10的数字序列'
+                },
+                {
+                    title: 'Python 函数定义补全（课题四）',
+                    description: '补全函数定义',
+                    question: '___ calculate_sum(a, b):\n    ___ a + b\n\nresult = calculate_sum(10, 20)',
+                    blanks: [
+                        { placeholder: '输入关键字', answer: 'def', type: 'keyword' },
+                        { placeholder: '输入关键字', answer: 'return', type: 'keyword' }
+                    ],
+                    explanation: 'def定义函数，return返回值'
+                },
+                {
+                    title: 'Python 堆栈操作补全（课题五）',
+                    description: '补全堆栈的push和pop操作',
+                    question: 'class Stack:\n    def __init__(self):\n        self.items = []\n    def push(self, item):\n        self.items.___(item)\n    def pop(self):\n        if self.is_empty():\n            return None\n        return self.items.___()',
+                    blanks: [
+                        { placeholder: '输入方法名', answer: 'append', type: 'function' },
+                        { placeholder: '输入方法名', answer: 'pop', type: 'function' }
+                    ],
+                    explanation: 'append()添加到列表末尾，pop()移除并返回最后一个元素'
+                },
+                {
+                    title: 'Python 二分查找补全（课题六）',
+                    description: '补全二分查找算法',
+                    question: 'def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left ___ right:\n        mid = (left + right) ___ 2',
+                    blanks: [
+                        { placeholder: '输入比较运算符', answer: '<=', type: 'operator' },
+                        { placeholder: '输入运算符', answer: '//', type: 'operator' }
+                    ],
+                    explanation: '<= 循环条件，// 整数除法计算中点'
+                },
+                {
+                    title: 'Python 文件读取补全（课题七）',
+                    description: '补全文件读取代码',
+                    question: '__ open("data.txt", "r", encoding="utf-8") as f:\n    for line in f:\n        data = line.___().split(",")',
+                    blanks: [
+                        { placeholder: '输入关键字', answer: 'with', type: 'keyword' },
+                        { placeholder: '输入方法名', answer: 'strip', type: 'function' }
+                    ],
+                    explanation: 'with管理文件资源，strip()去除首尾空白字符'
+                },
+                {
+                    title: 'Python 排序算法补全（课题六）',
+                    description: '补全冒泡排序算法',
+                    question: 'def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n - i - ___):\n            if arr[j] ___ arr[j + 1]:',
+                    blanks: [
+                        { placeholder: '输入数字', answer: '1', type: 'number' },
+                        { placeholder: '输入比较运算符', answer: '>', type: 'operator' }
+                    ],
+                    explanation: '1 表示每次循环减少一个元素，> 比较相邻元素大小'
+                }
+            ]
+        };
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            initializeParticles();
+            await loadProgress(); // 异步加载进度
+            updateStats();
+            buildQuestionList();
+            renderQuestionTable();
+        });
+        
+        // 构建题目列表
+        function buildQuestionList() {
+            allQuestions = [];
+            Object.keys(exercises).forEach(type => {
+                exercises[type].forEach((exercise, index) => {
+                    const language = exercise.title.includes('Python') || exercise.description.includes('Python') ? 'Python' : 'SQL';
+                    allQuestions.push({
+                        type: type,
+                        index: index,
+                        title: exercise.title,
+                        description: exercise.description,
+                        language: language,
+                        exercise: exercise
+                    });
+                });
+            });
+            filteredQuestions = [...allQuestions];
+        }
+        
+        // 渲染题目表格
+        function renderQuestionTable() {
+            const tbody = document.getElementById('question-table-body');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            filteredQuestions.forEach((q, idx) => {
+                const progressKey = `${q.type}-${q.index}`;
+                const isCompleted = userProgress[progressKey] && userProgress[progressKey].completed;
+                const isCorrect = userProgress[progressKey] && userProgress[progressKey].correct;
+                
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-700 hover:bg-gray-800/50 cursor-pointer';
+                tr.onclick = () => selectQuestion(q.type, q.index);
+                
+                const typeNames = {
+                    'drag-drop': '拖拽排序',
+                    'fill-blank': '填空练习',
+                    'multiple-choice': '选择题',
+                    'code-completion': '代码补全'
+                };
+                
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-gray-300">${typeNames[q.type] || q.type}</td>
+                    <td class="py-3 px-4 text-white">${q.title}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded text-xs ${q.language === 'Python' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-blue-500/20 text-blue-300'}">
+                            ${q.language}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        ${isCompleted ? 
+                            `<span class="px-2 py-1 rounded text-xs ${isCorrect ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}">
+                                ${isCorrect ? '✓ 正确' : '✗ 错误'}
+                            </span>` : 
+                            '<span class="px-2 py-1 rounded text-xs bg-gray-500/20 text-gray-400">未完成</span>'
+                        }
+                    </td>
+                    <td class="py-3 px-4">
+                        <button onclick="event.stopPropagation(); selectQuestion('${q.type}', ${q.index})" class="btn-primary px-3 py-1 text-xs">
+                            开始练习
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 切换题目表格显示
+        function toggleQuestionTable() {
+            const container = document.getElementById('question-table-container');
+            const toggleText = document.getElementById('table-toggle-text');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                toggleText.textContent = '隐藏题目表格';
+            } else {
+                container.classList.add('hidden');
+                toggleText.textContent = '显示题目表格';
+            }
+        }
+        
+        // 筛选题目
+        function filterQuestions() {
+            const typeFilter = document.getElementById('filter-type').value;
+            const languageFilter = document.getElementById('filter-language').value;
+            
+            filteredQuestions = allQuestions.filter(q => {
+                const typeMatch = typeFilter === 'all' || q.type === typeFilter;
+                const languageMatch = languageFilter === 'all' || q.language === languageFilter;
+                return typeMatch && languageMatch;
+            });
+            
+            renderQuestionTable();
+        }
+        
+        // 重置筛选
+        function resetFilters() {
+            document.getElementById('filter-type').value = 'all';
+            document.getElementById('filter-language').value = 'all';
+            filteredQuestions = [...allQuestions];
+            renderQuestionTable();
+        }
+        
+        // 选择题目
+        function selectQuestion(type, index) {
+            currentExerciseType = type;
+            currentQuestionIndex = index;
+            showExercise(exercises[type][index], type);
+        }
+        
+        // 初始化粒子背景
+        function initializeParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // 开始练习
+        function startExercise(type) {
+            currentExerciseType = type;
+            currentQuestionIndex = 0;
+            
+            if (exercises[type] && exercises[type].length > 0) {
+                showExercise(exercises[type][0], type);
+            } else {
+                showNotification('该练习类型即将推出', 'success');
+            }
+        }
+        
+        // 显示练习
+        function showExercise(exercise, type) {
+            const modal = document.getElementById('exercise-modal');
+            const title = document.getElementById('exercise-title');
+            const content = document.getElementById('exercise-content');
+            const progress = document.getElementById('exercise-progress');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            title.textContent = exercise.title;
+            
+            // 更新进度显示
+            const total = exercises[type].length;
+            progress.textContent = `题目 ${currentQuestionIndex + 1} / ${total}`;
+            
+            // 更新导航按钮状态
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex >= total - 1;
+            
+            let contentHTML = '';
+            
+            switch (type) {
+                case 'drag-drop':
+                    contentHTML = createDragDropExercise(exercise);
+                    break;
+                case 'fill-blank':
+                    contentHTML = createFillBlankExercise(exercise);
+                    break;
+                case 'multiple-choice':
+                    contentHTML = createMultipleChoiceExercise(exercise);
+                    break;
+                case 'code-completion':
+                    contentHTML = createCodeCompletionExercise(exercise);
+                    break;
+                default:
+                    contentHTML = '<p class="text-gray-300">练习内容即将推出</p>';
+            }
+            
+            content.innerHTML = contentHTML;
+            modal.classList.add('active');
+        }
+        
+        // 上一题
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showExercise(exercises[currentExerciseType][currentQuestionIndex], currentExerciseType);
+            }
+        }
+        
+        // 下一题
+        function nextQuestion() {
+            const total = exercises[currentExerciseType].length;
+            if (currentQuestionIndex < total - 1) {
+                currentQuestionIndex++;
+                showExercise(exercises[currentExerciseType][currentQuestionIndex], currentExerciseType);
+            } else {
+                showNotification('已经是最后一题了', 'info');
+            }
+        }
+        
+        // 自动跳转下一题
+        function autoNextQuestion() {
+            const autoNext = document.getElementById('auto-next');
+            if (autoNext && autoNext.checked) {
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1500); // 1.5秒后自动跳转
+            }
+        }
+        
+        // 创建拖拽练习
+        function createDragDropExercise(exercise) {
+            const itemsHTML = exercise.items.map((item, index) => `
+                <div class="drag-item glass-card p-3 mb-3 cursor-grab" draggable="true" data-index="${index}">
+                    <span class="text-white">${item}</span>
+                </div>
+            `).join('');
+            
+            const dropZonesHTML = exercise.items.map((_, index) => `
+                <div class="drop-zone p-4 mb-3 flex items-center justify-center" data-position="${index}">
+                    <span class="text-gray-400">步骤 ${index + 1}</span>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="mb-6">
+                    <p class="text-gray-300 mb-4">${exercise.description}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-white font-semibold mb-3">拖拽项目</h4>
+                            <div id="drag-items">
+                                ${itemsHTML}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold mb-3">正确顺序</h4>
+                            <div id="drop-zones">
+                                ${dropZonesHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-primary px-6 py-2" onclick="checkDragDropAnswer()">检查答案</button>
+                    <button class="btn-secondary px-6 py-2" onclick="resetDragDrop()">重置</button>
+                </div>
+                <div id="drag-result" class="mt-4 hidden"></div>
+            `;
+        }
+        
+        // 创建填空练习
+        function createFillBlankExercise(exercise) {
+            const parts = exercise.question.split('___');
+            const questionHTML = parts.map((part, index) => `
+                <span class="text-gray-300">${part}</span>
+                ${index < parts.length - 1 ? '<input type="text" class="bg-slate-700 border border-gray-600 rounded px-2 py-1 mx-1 text-white w-20" placeholder="填空">' : ''}
+            `).join('');
+            
+            return `
+                <div class="mb-6">
+                    <p class="text-gray-300 mb-4">${exercise.description}</p>
+                    <div class="glass-card p-4 mb-4">
+                        <div class="flex items-center flex-wrap">
+                            ${questionHTML}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-primary px-6 py-2" onclick="checkFillBlankAnswer('${exercise.answer}')">检查答案</button>
+                    <button class="btn-secondary px-6 py-2" onclick="showFillBlankHint('${exercise.explanation}')">查看提示</button>
+                </div>
+                <div id="fill-result" class="mt-4 hidden"></div>
+            `;
+        }
+        
+        // 创建代码补全练习
+        function createCodeCompletionExercise(exercise) {
+            const parts = exercise.question.split('___');
+            const blanks = exercise.blanks || [];
+            const questionHTML = parts.map((part, index) => {
+                let html = `<span class="text-gray-300 font-mono">${part}</span>`;
+                if (index < blanks.length) {
+                    const blank = blanks[index];
+                    html += `<input type="text" 
+                        class="code-completion-input bg-slate-700 border border-gray-600 rounded px-2 py-1 mx-1 text-white font-mono text-sm w-24" 
+                        placeholder="${blank.placeholder}" 
+                        data-answer="${blank.answer}"
+                        data-index="${index}">`;
+                }
+                return html;
+            }).join('');
+            
+            return `
+                <div class="mb-6">
+                    <p class="text-gray-300 mb-4">${exercise.description}</p>
+                    <div class="glass-card p-4 mb-4">
+                        <pre class="text-gray-300 font-mono text-sm whitespace-pre-wrap">${exercise.question.replace(/___/g, '<span class="bg-yellow-500/20 px-2 rounded">___</span>')}</pre>
+                    </div>
+                    <div class="glass-card p-4 mb-4">
+                        <div class="flex items-center flex-wrap font-mono text-sm">
+                            ${questionHTML}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-primary px-6 py-2" onclick="checkCodeCompletionAnswer()">检查答案</button>
+                    <button class="btn-secondary px-6 py-2" onclick="showCodeCompletionHint('${exercise.explanation}')">查看提示</button>
+                </div>
+                <div id="code-completion-result" class="mt-4 hidden"></div>
+            `;
+        }
+        
+        // 创建选择题练习
+        function createMultipleChoiceExercise(exercise) {
+            const optionsHTML = exercise.options.map((option, index) => `
+                <div class="quiz-option" onclick="selectMultipleChoiceOption(this, ${index}, ${exercise.correct})">
+                    <span class="text-gray-300">${option}</span>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="mb-6">
+                    <p class="text-gray-300 mb-4">${exercise.question}</p>
+                    <div class="space-y-3 mb-4">
+                        ${optionsHTML}
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-primary px-6 py-2" onclick="submitMultipleChoiceAnswer()">提交答案</button>
+                    <button class="btn-secondary px-6 py-2" onclick="showMultipleChoiceHint('${exercise.explanation}')">查看解析</button>
+                </div>
+                <div id="choice-result" class="mt-4 hidden"></div>
+            `;
+        }
+        
+        // 拖拽功能
+        let draggedElement = null;
+        let dropZoneAnswers = {};
+        
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.classList.contains('drag-item')) {
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+            }
+        });
+        
+        document.addEventListener('dragend', function(e) {
+            if (e.target.classList.contains('drag-item')) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+            }
+        });
+        
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('dragenter', function(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        });
+        
+        document.addEventListener('dragleave', function(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        });
+        
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('drop-zone') && draggedElement) {
+                const dropZone = e.target;
+                const position = dropZone.dataset.position;
+                const itemIndex = draggedElement.dataset.index;
+                
+                // 保存答案
+                dropZoneAnswers[position] = itemIndex;
+                
+                // 更新显示
+                dropZone.innerHTML = `<span class="text-white">${draggedElement.textContent}</span>`;
+                dropZone.classList.remove('drag-over');
+                draggedElement.style.display = 'none';
+            }
+        });
+        
+        // 检查拖拽答案
+        async function checkDragDropAnswer() {
+            const exercise = exercises[currentExerciseType][currentQuestionIndex];
+            let correct = 0;
+            
+            exercise.correctOrder.forEach((correctIndex, position) => {
+                const dropZone = document.querySelector(`[data-position="${position}"]`);
+                if (dropZoneAnswers[position] == correctIndex) {
+                    dropZone.classList.add('correct');
+                    correct++;
+                } else {
+                    dropZone.classList.add('incorrect');
+                }
+            });
+            
+            const isCorrect = correct === exercise.correctOrder.length;
+            const progressKey = `${currentExerciseType}-${currentQuestionIndex}`;
+            userProgress[progressKey] = {
+                completed: true,
+                correct: isCorrect,
+                timestamp: Date.now()
+            };
+            await saveProgress(); // 保存到后端
+            
+            const resultDiv = document.getElementById('drag-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg ${isCorrect ? 'border-green-500' : 'border-red-500'}">
+                    <p class="text-white mb-2">您答对了 ${correct} / ${exercise.correctOrder.length} 个位置</p>
+                    <p class="text-gray-300 text-sm">${exercise.explanation}</p>
+                </div>
+            `;
+            
+            updateProgress();
+            renderQuestionTable(); // 更新表格状态
+            
+            // 如果答对，自动跳转下一题
+            if (isCorrect) {
+                autoNextQuestion();
+            }
+        }
+        
+        // 重置拖拽练习
+        function resetDragDrop() {
+            const exercise = exercises[currentExerciseType][currentQuestionIndex];
+            const container = document.getElementById('exercise-content');
+            container.innerHTML = createDragDropExercise(exercise);
+            dropZoneAnswers = {};
+        }
+        
+        // 检查填空答案
+        async function checkFillBlankAnswer(correctAnswer) {
+            const inputs = document.querySelectorAll('input[type="text"]');
+            const userAnswer = Array.from(inputs).map(input => input.value.trim()).join(' ');
+            const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+            
+            const progressKey = `${currentExerciseType}-${currentQuestionIndex}`;
+            userProgress[progressKey] = {
+                completed: true,
+                correct: isCorrect,
+                timestamp: Date.now()
+            };
+            await saveProgress(); // 保存到后端
+            
+            const resultDiv = document.getElementById('fill-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg ${isCorrect ? 'border-green-500' : 'border-red-500'}">
+                    <p class="text-white mb-2">${isCorrect ? '回答正确！' : '回答错误'}</p>
+                    <p class="text-gray-300 text-sm">${exercises[currentExerciseType][currentQuestionIndex].explanation}</p>
+                </div>
+            `;
+            
+            updateProgress();
+            renderQuestionTable(); // 更新表格状态
+            
+            // 如果答对，自动跳转下一题
+            if (isCorrect) {
+                autoNextQuestion();
+            }
+        }
+        
+        // 显示填空提示
+        function showFillBlankHint(explanation) {
+            const resultDiv = document.getElementById('fill-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg border-blue-500">
+                    <p class="text-gray-300 text-sm">${explanation}</p>
+                </div>
+            `;
+        }
+        
+        // 检查代码补全答案
+        async function checkCodeCompletionAnswer() {
+            const exercise = exercises[currentExerciseType][currentQuestionIndex];
+            const inputs = document.querySelectorAll('.code-completion-input');
+            let allCorrect = true;
+            let correctCount = 0;
+            
+            inputs.forEach((input, index) => {
+                const userAnswer = input.value.trim();
+                const correctAnswer = input.dataset.answer;
+                const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+                
+                if (isCorrect) {
+                    input.classList.remove('border-red-500');
+                    input.classList.add('border-green-500');
+                    correctCount++;
+                } else {
+                    input.classList.remove('border-green-500');
+                    input.classList.add('border-red-500');
+                    allCorrect = false;
+                }
+            });
+            
+            const progressKey = `${currentExerciseType}-${currentQuestionIndex}`;
+            userProgress[progressKey] = {
+                completed: true,
+                correct: allCorrect,
+                timestamp: Date.now()
+            };
+            await saveProgress(); // 保存到后端
+            
+            const resultDiv = document.getElementById('code-completion-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg ${allCorrect ? 'border-green-500' : 'border-red-500'}">
+                    <p class="text-white mb-2">${allCorrect ? '✅ 全部正确！' : `答对了 ${correctCount} / ${inputs.length} 个空`}</p>
+                    <p class="text-gray-300 text-sm">${exercise.explanation}</p>
+                </div>
+            `;
+            
+            if (allCorrect) {
+                updateProgress();
+                renderQuestionTable(); // 更新表格状态
+                autoNextQuestion(); // 自动跳转下一题
+            }
+        }
+        
+        // 显示代码补全提示
+        function showCodeCompletionHint(explanation) {
+            const resultDiv = document.getElementById('code-completion-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg border-blue-500">
+                    <p class="text-gray-300 text-sm">💡 ${explanation}</p>
+                </div>
+            `;
+        }
+        
+        // 选择选择题选项
+        function selectMultipleChoiceOption(element, selectedIndex, correctIndex) {
+            const allOptions = element.parentNode.querySelectorAll('.quiz-option');
+            allOptions.forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            element.classList.add('selected');
+            window.selectedChoice = selectedIndex;
+        }
+        
+        // 提交选择题答案
+        async function submitMultipleChoiceAnswer() {
+            if (window.selectedChoice === undefined) {
+                showNotification('请选择一个选项', 'error');
+                return;
+            }
+            
+            const exercise = exercises[currentExerciseType][currentQuestionIndex];
+            const isCorrect = window.selectedChoice === exercise.correct;
+            
+            const progressKey = `${currentExerciseType}-${currentQuestionIndex}`;
+            userProgress[progressKey] = {
+                completed: true,
+                correct: isCorrect,
+                timestamp: Date.now()
+            };
+            await saveProgress(); // 保存到后端
+            
+            const allOptions = document.querySelectorAll('.quiz-option');
+            allOptions.forEach((option, index) => {
+                if (index === exercise.correct) {
+                    option.classList.add('correct');
+                } else if (index === window.selectedChoice && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            const resultDiv = document.getElementById('choice-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg ${isCorrect ? 'border-green-500' : 'border-red-500'}">
+                    <p class="text-white mb-2">${isCorrect ? '回答正确！' : '回答错误'}</p>
+                    <p class="text-gray-300 text-sm">${exercise.explanation}</p>
+                </div>
+            `;
+            
+            updateProgress();
+            renderQuestionTable(); // 更新表格状态
+            
+            // 如果答对，自动跳转下一题
+            if (isCorrect) {
+                autoNextQuestion();
+            }
+        }
+        
+        // 显示选择题提示
+        function showMultipleChoiceHint(explanation) {
+            const resultDiv = document.getElementById('choice-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="glass-card p-4 rounded-lg border-blue-500">
+                    <p class="text-gray-300 text-sm">${explanation}</p>
+                </div>
+            `;
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const totalExercises = 15;
+            const completedExercises = Object.keys(userProgress).length;
+            const correctAnswers = Object.values(userProgress).filter(p => p.correct).length;
+            const accuracy = completedExercises > 0 ? Math.round((correctAnswers / completedExercises) * 100) : 0;
+            
+            document.getElementById('total-exercises').textContent = totalExercises;
+            document.getElementById('completed-exercises').textContent = completedExercises;
+            document.getElementById('accuracy-rate').textContent = accuracy + '%';
+            document.getElementById('streak-days').textContent = userProgress.streak || 0;
+        }
+        
+        // 更新进度（仅更新统计显示，不保存）
+        function updateProgress() {
+            updateStats();
+        }
+        
+        // 开始推荐练习
+        function startRecommendedExercise() {
+            startExercise('drag-drop');
+        }
+        
+        // 关闭练习模态框
+        function closeExerciseModal() {
+            const modal = document.getElementById('exercise-modal');
+            modal.classList.remove('active');
+            window.selectedChoice = undefined;
+        }
+        
+        // 显示移动版
+        function showMobileApp() {
+            window.location.href = 'mobile-app.html';
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('exercise-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeExerciseModal();
+            }
+        });
+        
+        // 导出函数供HTML调用
+        // 导出函数到全局作用域
+        window.startExercise = startExercise;
+        window.closeExerciseModal = closeExerciseModal;
+        window.selectQuestion = selectQuestion;
+        window.toggleQuestionTable = toggleQuestionTable;
+        window.filterQuestions = filterQuestions;
+        window.resetFilters = resetFilters;
+        window.previousQuestion = previousQuestion;
+        window.nextQuestion = nextQuestion;
+        window.checkDragDropAnswer = checkDragDropAnswer;
+        window.checkFillBlankAnswer = checkFillBlankAnswer;
+        window.submitMultipleChoiceAnswer = submitMultipleChoiceAnswer;
+        window.checkCodeCompletionAnswer = checkCodeCompletionAnswer;
+        window.checkDragDropAnswer = checkDragDropAnswer;
+        window.resetDragDrop = resetDragDrop;
+        window.checkFillBlankAnswer = checkFillBlankAnswer;
+        window.showFillBlankHint = showFillBlankHint;
+        window.selectMultipleChoiceOption = selectMultipleChoiceOption;
+        window.submitMultipleChoiceAnswer = submitMultipleChoiceAnswer;
+        window.showMultipleChoiceHint = showMultipleChoiceHint;
+        window.startRecommendedExercise = startRecommendedExercise;
+        window.showMobileApp = showMobileApp;
+    </script>
+</body>
+</html>

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL & Python 训练营 - 掌握数据库与编程艺术</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #00f5ff;
+            --primary-purple: #6366f1;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --gradient-primary: linear-gradient(135deg, #00f5ff 0%, #6366f1 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        body {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-green {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-orange {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 1px;
+        }
+        
+        .hero-section {
+            background: radial-gradient(ellipse at center, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+            position: relative;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.6);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .code-block .keyword {
+            color: #00f5ff;
+        }
+        
+        .code-block .string {
+            color: #10b981;
+        }
+        
+        .code-block .comment {
+            color: #64748b;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 245, 255, 0.1);
+        }
+        
+        .learning-path {
+            position: relative;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .path-step {
+            position: relative;
+            z-index: 2;
+            background: var(--primary-dark);
+            border: 3px solid;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .path-step.completed {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .path-step.current {
+            border-color: var(--primary-blue);
+            background: rgba(0, 245, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .path-step.locked {
+            border-color: var(--text-gray);
+            opacity: 0.5;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+            
+            .learning-path {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .learning-path::before {
+                display: none;
+            }
+            
+            .path-step {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">SP</span>
+                    </div>
+                    <h1 class="text-xl font-bold gradient-text">SQL & Python 训练营</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link active">首页</a>
+                    <a href="practice.html" class="nav-link">SQL训练营</a>
+                    <a href="python-center.html" class="nav-link">Python中心</a>
+                    <a href="all-practice.html" class="nav-link">综合练习</a>
+                    <a href="interactive.html" class="nav-link">互动练习</a>
+                    <a href="guide.html" class="nav-link">学习指南</a>
+                    <a href="progress.html" class="nav-link">学习进度</a>
+                    <a href="user-system.html" class="nav-link">用戶中心</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="showMobileApp()">移动版</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">👤</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 英雄区域 -->
+    <section id="home" class="hero-section min-h-screen flex items-center justify-center relative pt-16">
+        <div class="floating-particles" id="particles"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <h1 class="text-5xl md:text-7xl font-bold gradient-text mb-6 leading-tight">
+                    掌握数据库<br>与编程艺术
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    从SQL查询优化到Python算法实现，系统性地构建您的数据科学和软件开发技能。
+                    35道真题练习，7大Python课题，无限编程可能。
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <button class="btn-primary px-8 py-4 text-lg font-semibold" onclick="startLearning()">
+                        🚀 开始学习之旅
+                    </button>
+                    <button class="btn-secondary px-8 py-4 text-lg font-semibold" onclick="viewDemo()">
+                        📺 观看演示
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 特色功能预览 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">📚</div>
+                    <h3 class="font-semibold text-white mb-2">35道真题</h3>
+                    <p class="text-sm text-gray-300">SQL练习题库</p>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">🐍</div>
+                    <h3 class="font-semibold text-white mb-2">Python课程</h3>
+                    <p class="text-sm text-gray-300">7大核心课题</p>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">💻</div>
+                    <h3 class="font-semibold text-white mb-2">在线编程</h3>
+                    <p class="text-sm text-gray-300">实时运行环境</p>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">🏆</div>
+                    <h3 class="font-semibold text-white mb-2">成就系统</h3>
+                    <p class="text-sm text-gray-300">学习激励</p>
+                </div>
+            </div>
+            
+            <!-- 学习路径预览 -->
+            <div class="glass-card p-8">
+                <h3 class="text-2xl font-bold text-white mb-6">学习路径</h3>
+                <div class="learning-path flex items-center justify-between max-w-4xl mx-auto">
+                    <div class="path-step completed">
+                        <span>📊</span>
+                    </div>
+                    <div class="path-step completed">
+                        <span>🔍</span>
+                    </div>
+                    <div class="path-step current">
+                        <span>🐍</span>
+                    </div>
+                    <div class="path-step locked">
+                        <span>🚀</span>
+                    </div>
+                    <div class="path-step locked">
+                        <span>🏆</span>
+                    </div>
+                </div>
+                <div class="flex justify-between max-w-4xl mx-auto mt-4 text-sm text-gray-300">
+                    <span>SQL基础</span>
+                    <span>高级查询</span>
+                    <span>Python编程</span>
+                    <span>项目实战</span>
+                    <span>专业认证</span>
+                </div>
+            </div>
+            
+            <div class="scroll-indicator">
+                <div class="text-gray-400 text-sm mb-2">向下滚动探索更多</div>
+                <div class="text-2xl text-gray-400">↓</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SQL训练营模块 -->
+    <section id="sql-trainer" class="py-20 bg-gradient-to-b from-transparent to-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold gradient-text mb-4">SQL训练营</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    从基础SELECT查询到复杂的多表连接，系统掌握数据库查询语言的精髓
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-6">为什么选择我们的SQL训练营？</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-4 mt-1">
+                                <span class="text-white text-xs">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white mb-1">真实考试题库</h4>
+                                <p class="text-gray-300 text-sm">35道来自香港DSE ICT考试的真题，包含详细解析</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-4 mt-1">
+                                <span class="text-white text-xs">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white mb-1">渐进式学习</h4>
+                                <p class="text-gray-300 text-sm">从基础到高级，循序渐进的学习路径设计</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-4 mt-1">
+                                <span class="text-white text-xs">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white mb-1">即时反馈</h4>
+                                <p class="text-gray-300 text-sm">在线SQL编辑器，实时运行代码，即时查看结果</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary px-6 py-3 mt-6" onclick="openSQLTrainer()">
+                        开始SQL学习
+                    </button>
+                </div>
+                
+                <div class="glass-card p-6">
+                    <h4 class="font-semibold text-white mb-4">示例：JOIN查询</h4>
+                    <div class="code-block">
+<span class="comment">-- 查询同时参加三个学会的学生</span>
+<span class="keyword">SELECT</span> s.Name, s.Class
+<span class="keyword">FROM</span> Student s
+<span class="keyword">JOIN</span> PhysicsClub p <span class="keyword">ON</span> s.ID = p.ID
+<span class="keyword">JOIN</span> ChemistryClub c <span class="keyword">ON</span> s.ID = c.ID
+<span class="keyword">JOIN</span> BiologyClub b <span class="keyword">ON</span> s.ID = b.ID
+<span class="keyword">WHERE</span> s.Sex = <span class="string">'M'</span>
+<span class="keyword">ORDER BY</span> s.Name;
+                    </div>
+                    <div class="mt-4 text-sm text-gray-400">
+                        这段代码展示了如何使用多表JOIN来找出同时参加物理、化学、生物三个学会的男学生。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SQL学习模块 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="feature-card" onclick="openSQLModule('basic')">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-semibold text-white mb-2">基础查询</h3>
+                    <p class="text-gray-300 text-sm mb-4">SELECT, WHERE, ORDER BY</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">8个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card" onclick="openSQLModule('join')">
+                    <div class="text-4xl mb-4">🔗</div>
+                    <h3 class="text-xl font-semibold text-white mb-2">连接查询</h3>
+                    <p class="text-gray-300 text-sm mb-4">JOIN, UNION, INTERSECT</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">12个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card" onclick="openSQLModule('advanced')">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-semibold text-white mb-2">高级查询</h3>
+                    <p class="text-gray-300 text-sm mb-4">子查询, 窗口函数</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">10个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card" onclick="openSQLModule('optimization')">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h3 class="text-xl font-semibold text-white mb-2">性能优化</h3>
+                    <p class="text-gray-300 text-sm mb-4">索引, 查询优化</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded">5个练习</span>
+                        <span class="text-cyan-400">→</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Python学习中心 -->
+    <section id="python-center" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold gradient-text-green mb-4">Python学习中心</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    从算法设计到高级数据结构，全面掌握Python编程的核心概念和实践技能
+                </p>
+            </div>
+            
+            <!-- Python课程介绍 -->
+            <div class="glass-card p-8 mb-16">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-6">7大核心课题</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">1</span>
+                                </div>
+                                <span class="text-gray-300">算法设计与Python程序基础</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">2</span>
+                                </div>
+                                <span class="text-gray-300">程序测试与调试</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">3</span>
+                                </div>
+                                <span class="text-gray-300">进阶控制结构</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">4</span>
+                                </div>
+                                <span class="text-gray-300">子程序</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">5</span>
+                                </div>
+                                <span class="text-gray-300">数据结构</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">6</span>
+                                </div>
+                                <span class="text-gray-300">搜索与排序</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-4">
+                                    <span class="text-white text-sm font-bold">7</span>
+                                </div>
+                                <span class="text-gray-300">文本文件处理</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="comment"># Python算法示例：二分搜索</span>
+<span class="keyword">def</span> <span class="function">binary_search</span>(arr, target):
+    left, right = <span class="number">0</span>, <span class="function">len</span>(arr) - <span class="number">1</span>
+    
+    <span class="keyword">while</span> left <= right:
+        mid = (left + right) // <span class="number">2</span>
+        <span class="keyword">if</span> arr[mid] == target:
+            <span class="keyword">return</span> mid
+        <span class="keyword">elif</span> arr[mid] < target:
+            left = mid + <span class="number">1</span>
+        <span class="keyword">else</span>:
+            right = mid - <span class="number">1</span>
+    <span class="keyword">return</span> -<span class="number">1</span>
+
+<span class="comment"># 使用示例</span>
+numbers = [<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span>, <span class="number">11</span>]
+result = <span class="function">binary_search</span>(numbers, <span class="number">7</span>)
+<span class="function">print</span>(<span class="string">f"找到目标值在索引: {result}"</span>)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button class="btn-primary px-8 py-4 text-lg" onclick="openPythonCenter()">
+                    开始Python学习
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 项目实战 -->
+    <section id="projects" class="py-20 bg-gradient-to-b from-transparent to-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold gradient-text-orange mb-4">项目实战</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    将SQL和Python技能应用到实际项目中，构建完整的数据驱动应用
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="glass-card p-6">
+                    <div class="text-4xl mb-4">🌐</div>
+                    <h3 class="text-xl font-semibold text-white mb-3">学生管理系统</h3>
+                    <p class="text-gray-300 text-sm mb-4">
+                        使用Flask + SQLite构建完整的学生信息管理系统，包含增删改查功能
+                    </p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">Web应用</span>
+                        <span class="text-xs text-gray-400">预计2-3小时</span>
+                    </div>
+                    <button class="btn-primary w-full py-2 text-sm" onclick="startProject('student-system')">
+                        开始项目
+                    </button>
+                </div>
+                
+                <div class="glass-card p-6">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-semibold text-white mb-3">数据分析仪表板</h3>
+                    <p class="text-gray-300 text-sm mb-4">
+                        使用Pandas和Matplotlib分析销售数据，创建交互式数据可视化仪表板
+                    </p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">数据分析</span>
+                        <span class="text-xs text-gray-400">预计3-4小时</span>
+                    </div>
+                    <button class="btn-primary w-full py-2 text-sm" onclick="startProject('data-dashboard')">
+                        开始项目
+                    </button>
+                </div>
+                
+                <div class="glass-card p-6">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-semibold text-white mb-3">自动化工具</h3>
+                    <p class="text-gray-300 text-sm mb-4">
+                        开发Python脚本自动处理Excel文件，实现数据清洗和报告生成
+                    </p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">自动化</span>
+                        <span class="text-xs text-gray-400">预计1-2小时</span>
+                    </div>
+                    <button class="btn-primary w-full py-2 text-sm" onclick="startProject('automation-tool')">
+                        开始项目
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 学习统计 -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold gradient-text mb-4">学习成果</h2>
+                <p class="text-xl text-gray-300">用数据见证您的编程成长之路</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="stat-card">
+                    <div class="text-4xl font-bold gradient-text mb-2" id="total-students">1,234</div>
+                    <div class="text-gray-300">活跃学员</div>
+                    <div class="text-xs text-gray-400 mt-2">本月新增</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl font-bold gradient-text-green mb-2" id="completed-exercises">15,678</div>
+                    <div class="text-gray-300">完成练习</div>
+                    <div class="text-xs text-gray-400 mt-2">总计</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl font-bold gradient-text-orange mb-2" id="success-rate">89%</div>
+                    <div class="text-gray-300">成功率</div>
+                    <div class="text-xs text-gray-400 mt-2">平均正确率</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl font-bold gradient-text mb-2" id="learning-hours">45,678</div>
+                    <div class="text-gray-300">学习小时</div>
+                    <div class="text-xs text-gray-400 mt-2">平台总计</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 底部 -->
+    <footer class="bg-slate-900/50 border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">SP</span>
+                    </div>
+                    <h3 class="text-xl font-bold gradient-text">SQL & Python 训练营</h3>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    专业的编程学习平台，致力于帮助学习者掌握数据库和Python编程技能，
+                    为数据科学和软件开发职业道路奠定坚实基础。
+                </p>
+                <div class="flex items-center justify-center space-x-8 mb-8">
+                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">关于我们</a>
+                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">使用条款</a>
+                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">隐私政策</a>
+                    <a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">联系我们</a>
+                </div>
+                <div class="border-t border-white/10 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2025 SQL & Python 训练营. 保留所有权利.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            initializeAnimations();
+            initializeScrollEffects();
+        });
+        
+        // 创建粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 8000);
+            }
+            
+            setInterval(createParticle, 600);
+        }
+        
+        // 初始化动画
+        function initializeAnimations() {
+            // 页面加载动画
+            anime({
+                targets: '.hero-section h1',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000,
+                easing: 'easeOutQuad',
+                delay: 300
+            });
+            
+            anime({
+                targets: '.hero-section p',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800,
+                easing: 'easeOutQuad',
+                delay: 500
+            });
+            
+            anime({
+                targets: '.hero-section button',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 600,
+                easing: 'easeOutQuad',
+                delay: 700
+            });
+        }
+        
+        // 初始化滚动效果
+        function initializeScrollEffects() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: entry.target,
+                            opacity: [0, 1],
+                            translateY: [30, 0],
+                            duration: 800,
+                            easing: 'easeOutQuad'
+                        });
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察需要动画的元素
+            document.querySelectorAll('.feature-card, .stat-card, .glass-card').forEach(el => {
+                el.style.opacity = '0';
+                observer.observe(el);
+            });
+        }
+        
+        // 导航功能
+        function startLearning() {
+            showNotification('欢迎开始学习之旅！', 'success');
+            setTimeout(() => {
+                document.getElementById('sql-trainer').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+        
+        function viewDemo() {
+            showNotification('演示视频即将推出', 'success');
+        }
+        
+        function showMobileApp() {
+            window.location.href = 'mobile-app.html';
+        }
+        
+        function openSQLTrainer() {
+            window.location.href = 'practice.html';
+        }
+        
+        function openSQLModule(module) {
+            showNotification(`正在加载${module}模块...`, 'success');
+            setTimeout(() => {
+                window.location.href = 'practice.html';
+            }, 1000);
+        }
+        
+        function openPythonCenter() {
+            showNotification('Python学习中心即将推出', 'success');
+        }
+        
+        function startProject(projectType) {
+            const projects = {
+                'student-system': '学生管理系统项目',
+                'data-dashboard': '数据分析仪表板项目',
+                'automation-tool': '自动化工具项目'
+            };
+            showNotification(`${projects[projectType]}即将推出`, 'success');
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        // 滚动导航高亮
+        window.addEventListener('scroll', () => {
+            const sections = ['home', 'sql-trainer', 'python-center', 'projects'];
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                if (element && element.offsetTop <= window.scrollY + 100) {
+                    current = section;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // 数字动画
+        function animateNumbers() {
+            const numbers = [
+                { id: 'total-students', target: 1234 },
+                { id: 'completed-exercises', target: 15678 },
+                { id: 'success-rate', target: 89, suffix: '%' },
+                { id: 'learning-hours', target: 45678 }
+            ];
+            
+            numbers.forEach(({ id, target, suffix = '' }) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    anime({
+                        targets: { value: 0 },
+                        value: target,
+                        duration: 2000,
+                        easing: 'easeOutQuad',
+                        update: function(anim) {
+                            element.textContent = Math.round(anim.animatables[0].target.value) + suffix;
+                        }
+                    });
+                }
+            });
+        }
+        
+        // 当统计区域进入视口时触发动画
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateNumbers();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        });
+        
+        const statsSection = document.querySelector('#total-students').closest('section');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+    </script>
+    <!-- 全站 AI 助手 (測試版) -->
+    <script src="../ai-service.js"></script>
+    <script src="../ai-assistant.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL训练营 - 选择版本</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .version-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold gradient-text mb-4">SQL训练营</h1>
+            <p class="text-xl text-gray-300 mb-2">专业的SQL学习和练习平台</p>
+            <p class="text-gray-400">选择适合您的版本开始SQL学习之旅</p>
+        </div>
+        
+        <div class="version-grid grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <!-- 桌面版 -->
+            <div class="glass-card p-8 text-center">
+                <div class="text-6xl mb-6">💻</div>
+                <h2 class="text-3xl font-bold text-white mb-4">桌面版</h2>
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    完整功能的桌面版本，支持大屏幕显示，包含所有学习模块和高级功能。
+                    适合在电脑上进行深入学习和练习。
+                </p>
+                
+                <div class="space-y-3 mb-8">
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        完整的分段滚动效果
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        高级SQL编辑器
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        35道真题练习
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        互动练习模式
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        学习进度追踪
+                    </div>
+                </div>
+                
+                <button class="btn-primary w-full py-4 text-lg mb-4" onclick="window.location.href='index.html'">
+                    进入桌面版
+                </button>
+                
+                <div class="text-xs text-gray-400">
+                    推荐在电脑、平板等大屏幕设备上使用
+                </div>
+            </div>
+            
+            <!-- 移动版 -->
+            <div class="glass-card p-8 text-center">
+                <div class="text-6xl mb-6">📱</div>
+                <h2 class="text-3xl font-bold text-white mb-4">移动版</h2>
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    专为移动设备优化的版本，支持PWA安装，提供触控友好的学习体验。
+                    随时随地进行SQL学习和练习。
+                </p>
+                
+                <div class="space-y-3 mb-8">
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        PWA应用支持
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        触控优化界面
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        35道真题练习
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        互动练习模式
+                    </div>
+                    <div class="flex items-center justify-center text-sm text-gray-300">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                        离线学习支持
+                    </div>
+                </div>
+                
+                <button class="btn-primary w-full py-4 text-lg mb-4" onclick="window.location.href='mobile-app.html'">
+                    进入移动版
+                </button>
+                
+                <div class="text-xs text-gray-400">
+                    推荐在手机等移动设备上使用
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速链接 -->
+        <div class="mt-12 text-center">
+            <h3 class="text-xl font-semibold text-white mb-6">快速访问</h3>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="btn-secondary px-6 py-3" onclick="window.location.href='practice.html'">
+                    📚 题库练习
+                </button>
+                <button class="btn-secondary px-6 py-3" onclick="window.location.href='interactive.html'">
+                    🎯 互动练习
+                </button>
+            </div>
+        </div>
+        
+        <!-- 功能特色 -->
+        <div class="mt-16 max-w-4xl mx-auto">
+            <h3 class="text-2xl font-bold text-white text-center mb-8">功能特色</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">📚</div>
+                    <h4 class="font-semibold text-white mb-2">35道真题</h4>
+                    <p class="text-sm text-gray-300">包含详细的PDF题库，涵盖JOIN、INTERSECT、MINUS等高级SQL语法</p>
+                </div>
+                
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">🎯</div>
+                    <h4 class="font-semibold text-white mb-2">互动练习</h4>
+                    <p class="text-sm text-gray-300">多种练习模式，包括填空题、拖拽排序、选择题和概念匹配</p>
+                </div>
+                
+                <div class="glass-card p-6 text-center">
+                    <div class="text-3xl mb-3">📊</div>
+                    <h4 class="font-semibold text-white mb-2">进度追踪</h4>
+                    <p class="text-sm text-gray-300">完整的学习统计和成就系统，实时追踪学习进度</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 创建粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 6000);
+            }
+            
+            setInterval(createParticle, 800);
+        }
+        
+        // 页面加载完成后创建粒子
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>

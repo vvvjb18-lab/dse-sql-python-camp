@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习中心 - 完整版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #00f5ff;
+            --primary-purple: #6366f1;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --gradient-primary: linear-gradient(135deg, #00f5ff 0%, #6366f1 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        body {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-green {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 1px;
+        }
+        
+        .sidebar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chapter-item {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .chapter-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .chapter-item.active {
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+        }
+        
+        .chapter-item.completed {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .code-editor {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-editor .CodeMirror {
+            height: 300px;
+            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .code-editor .CodeMirror-gutters {
+            background: #334155;
+            border-right: 1px solid #475569;
+        }
+        
+        .code-editor .CodeMirror-linenumber {
+            color: #64748b;
+        }
+        
+        .code-block {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .code-block .keyword {
+            color: #00f5ff;
+        }
+        
+        .code-block .string {
+            color: #10b981;
+        }
+        
+        .code-block .comment {
+            color: #64748b;
+        }
+        
+        .code-block .function {
+            color: #f59e0b;
+        }
+        
+        .code-block .number {
+            color: #8b5cf6;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+        }
+        
+        .quiz-option.selected {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: rgba(0, 245, 255, 0.5);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">Py</span>
+                    </div>
+                    <h1 class="text-xl font-bold gradient-text-green">Python学习中心</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="practice.html" class="nav-link">SQL训练营</a>
+                    <a href="#" class="nav-link active">Python中心</a>
+                    <a href="all-practice.html" class="nav-link">综合练习</a>
+                    <a href="interactive.html" class="nav-link">互动练习</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="showMobileApp()">移动版</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">👤</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <div class="flex pt-16 min-h-screen">
+        <!-- 侧边栏 -->
+        <div class="sidebar w-80 p-6 overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-white mb-4">学习进度</h2>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-300">总体进度</span>
+                            <span class="text-cyan-400" id="overall-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-300">已完成课题</span>
+                        <span class="text-green-400" id="completed-chapters">0/7</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-white mb-4">课题列表</h3>
+                <div class="space-y-2" id="chapters-list">
+                    <!-- 课题列表将动态生成 -->
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">学习工具</h3>
+                <div class="space-y-3">
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openPythonEditor()">
+                        📝 Python编辑器
+                    </button>
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openDebugger()">
+                        🐛 调试工具
+                    </button>
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openVisualizer()">
+                        📊 算法可视化
+                    </button>
+                    <button class="btn-secondary w-full py-3 text-sm" onclick="openQuiz()">
+                        🧠 知识测验
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div id="chapter-content">
+                <!-- 默认显示课题一内容 -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold gradient-text-green mb-4" id="chapter-title">课题一：算法设计与Python程序基础</h1>
+                    <p class="text-gray-300 text-lg mb-6" id="chapter-description">
+                        学习算法的核心概念，掌握Python编程基础，为后续学习奠定坚实基础。
+                    </p>
+                    
+                    <!-- 学习目标 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">学习目标</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">理解演算法的定义和特性</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">掌握IPO循环分析方法</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">学会使用虚拟码和流程图</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">掌握Python基础语法</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">理解变量和数据类型</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                                    <span class="text-gray-300 text-sm">学会使用控制结构</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 核心概念 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">核心概念</h2>
+                        <div id="chapter-concepts">
+                            <!-- 核心概念内容将动态加载 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 代码示例 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">代码示例</h2>
+                        <div id="chapter-examples">
+                            <!-- 代码示例将动态加载 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 实践练习 -->
+                    <div class="glass-card p-6 mb-8">
+                        <h2 class="text-xl font-semibold text-white mb-4">实践练习</h2>
+                        <div id="chapter-practices">
+                            <!-- 实践练习将动态加载 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 知识测验 -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-xl font-semibold text-white mb-4">知识测验</h2>
+                        <div id="chapter-quiz">
+                            <!-- 知识测验将动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- 题库文件 -->
+    <script src="python-questions.js"></script>
+    
+    <script>
+        // Python课程完整数据
+        const pythonChapters = {
+            1: {
+                title: "课题一：算法设计与Python程序基础",
+                description: "学习算法的核心概念，掌握Python编程基础，为后续学习奠定坚实基础。",
+                topics: ["算法定义", "IPO循环", "Python环境", "基础语法", "数据类型", "控制结构"],
+                concepts: [
+                    {
+                        title: "1.1 演算法 (Algorithms)",
+                        content: "演算法是解决问题的步骤集合。一个好的演算法应该具备明确性、有限性、有效性和输入输出特性。",
+                        details: [
+                            {
+                                subtitle: "IPO循环",
+                                content: "IPO循环是问题分析的重要工具，包含三个步骤：",
+                                list: [
+                                    "Input (输入)：程序需要的数据",
+                                    "Process (处理)：对输入数据的操作",
+                                    "Output (输出)：程序产生的结果"
+                                ]
+                            },
+                            {
+                                subtitle: "表示方法",
+                                content: "算法可以用多种方式表示：",
+                                list: [
+                                    "虚拟码 (Pseudocode)：类似自然语言的算法描述",
+                                    "流程图 (Flowchart)：图形化表示算法步骤",
+                                    "追踪表 (Trace Table)：逐步分析变量变化"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "1.2 Python程序基础",
+                        content: "Python是一种简洁而强大的编程语言，适合初学者学习。",
+                        details: [
+                            {
+                                subtitle: "开发环境",
+                                content: "推荐使用Thonny IDE进行Python开发，它提供了友好的界面和调试功能。"
+                            },
+                            {
+                                subtitle: "基本语法",
+                                content: "Python的基本语法规则：",
+                                list: [
+                                    "使用 # 进行注释",
+                                    "缩进表示代码块层级",
+                                    "变量命名遵循特定规则"
+                                ]
+                            },
+                            {
+                                subtitle: "数据类型",
+                                content: "Python的基本数据类型：",
+                                list: [
+                                    "int - 整数类型",
+                                    "float - 浮点数类型",
+                                    "str - 字符串类型",
+                                    "bool - 布尔类型"
+                                ]
+                            },
+                            {
+                                subtitle: "控制结构",
+                                content: "Python的控制结构：",
+                                list: [
+                                    "if-elif-else - 条件判断",
+                                    "for - 循环遍历",
+                                    "while - 条件循环"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例1：BMI计算器",
+                        description: "这是一个简单的BMI计算器，展示了IPO循环的应用。",
+                        code: `# BMI计算器 - 展示IPO循环
+# Input: 获取用户输入的身高和体重
+height = float(input("请输入身高(米): "))
+weight = float(input("请输入体重(千克): "))
+
+# Process: 计算BMI
+bmi = weight / (height ** 2)
+
+# Output: 显示结果和健康状况
+print(f"您的BMI是: {bmi:.2f}")
+
+if bmi < 18.5:
+    print("体重过轻")
+elif bmi < 24:
+    print("体重正常")
+elif bmi < 28:
+    print("体重超重")
+else:
+    print("肥胖")`
+                    },
+                    {
+                        title: "示例2：列表操作",
+                        description: "演示Python列表的基本操作，包括添加、删除和遍历元素。",
+                        code: `# 列表示例 - 学生成绩管理
+scores = [85, 92, 78, 96, 88]
+
+# 添加新成绩
+scores.append(90)
+print(f"添加后: {scores}")
+
+# 计算平均分
+average = sum(scores) / len(scores)
+print(f"平均分: {average:.2f}")
+
+# 找出最高分和最低分
+max_score = max(scores)
+min_score = min(scores)
+print(f"最高分: {max_score}, 最低分: {min_score}")
+
+# 遍历列表并显示
+for i, score in enumerate(scores, 1):
+    print(f"学生{i}: {score}分")`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习1：简单计算器",
+                        description: "编写一个简单的计算器程序，能够进行加减乘除四则运算。",
+                        code: `# 在这里编写你的计算器代码...`
+                    },
+                    {
+                        title: "练习2：成绩统计",
+                        description: "编写程序统计一组学生成绩，计算平均分、最高分和最低分。",
+                        code: `# 在这里编写你的成绩统计代码...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "Python中用于单行注释的符号是？",
+                        options: [
+                            "// 双斜杠",
+                            "# 井号",
+                            "/* */ 斜杠星号",
+                            "-- 双减号"
+                        ],
+                        correct: 1,
+                        explanation: "Python使用#符号进行单行注释。"
+                    },
+                    {
+                        question: "以下哪个不是Python的基本数据类型？",
+                        options: [
+                            "int - 整数类型",
+                            "float - 浮点数类型",
+                            "char - 字符类型",
+                            "bool - 布尔类型"
+                        ],
+                        correct: 2,
+                        explanation: "Python没有char类型，字符串使用str类型表示。"
+                    }
+                ]
+            },
+            2: {
+                title: "课题二：程序测试与调试",
+                description: "学习程序测试方法，掌握调试技巧，提高代码质量。",
+                topics: ["错误类型", "调试工具", "测试方法", "异常处理", "程序追踪"],
+                concepts: [
+                    {
+                        title: "2.1 错误类型",
+                        content: "Python程序中常见的错误类型：",
+                        details: [
+                            {
+                                subtitle: "语法错误 (SyntaxError)",
+                                content: "代码不符合Python语法规则，通常在编译时发现。"
+                            },
+                            {
+                                subtitle: "运行时错误 (RuntimeError)",
+                                content: "程序运行时发生的错误，如除以零、索引越界等。"
+                            },
+                            {
+                                subtitle: "逻辑错误 (LogicError)",
+                                content: "程序语法正确，运行正常，但结果不符合预期。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：异常处理",
+                        description: "使用try-except处理异常情况。",
+                        code: `try:
+    num1 = int(input("请输入第一个数: "))
+    num2 = int(input("请输入第二个数: "))
+    result = num1 / num2
+    print(f"结果是: {result}")
+except ValueError:
+    print("请输入有效的整数！")
+except ZeroDivisionError:
+    print("除数不能为零！")
+except Exception as e:
+    print(f"发生错误: {e}")`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：异常处理程序",
+                        description: "编写一个程序，处理用户输入时可能出现的各种异常。",
+                        code: `# 编写一个安全的除法程序...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "哪种错误类型在程序运行时发生？",
+                        options: [
+                            "语法错误",
+                            "运行时错误",
+                            "逻辑错误",
+                            "编译错误"
+                        ],
+                        correct: 1,
+                        explanation: "运行时错误在程序执行过程中发生。"
+                    }
+                ]
+            },
+            3: {
+                title: "课题三：进阶控制结构",
+                description: "深入学习嵌套结构、循环优化和复杂逻辑处理。",
+                topics: ["嵌套条件", "嵌套循环", "循环优化", "复杂逻辑", "算法设计"],
+                concepts: [
+                    {
+                        title: "3.1 嵌套结构",
+                        content: "在控制结构中包含其他控制结构，实现复杂逻辑。",
+                        details: [
+                            {
+                                subtitle: "嵌套条件语句",
+                                content: "在if语句中嵌套其他if语句，处理多条件判断。"
+                            },
+                            {
+                                subtitle: "嵌套循环",
+                                content: "在循环中嵌套其他循环，处理多维数据结构。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：九九乘法表",
+                        description: "使用嵌套循环打印九九乘法表。",
+                        code: `for i in range(1, 10):
+    for j in range(1, i + 1):
+        print(f"{j}×{i}={i*j}", end="\t")
+    print()`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：金字塔图案",
+                        description: "使用嵌套循环打印金字塔图案。",
+                        code: `# 编写代码打印金字塔图案...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "以下哪个最适合使用嵌套循环？",
+                        options: [
+                            "计算1到100的和",
+                            "打印九九乘法表",
+                            "判断一个数是否为质数",
+                            "查找列表中的最大值"
+                        ],
+                        correct: 1,
+                        explanation: "九九乘法表需要行和列的双重循环，适合使用嵌套循环。"
+                    }
+                ]
+            },
+            4: {
+                title: "课题四：子程序",
+                description: "学习函数定义、参数传递、递归和模块化设计。",
+                topics: ["函数定义", "参数传递", "变量作用域", "递归", "模块化设计"],
+                concepts: [
+                    {
+                        title: "4.1 函数基础",
+                        content: "函数是可重用的代码块，提高程序的模块性和代码复用。",
+                        details: [
+                            {
+                                subtitle: "函数定义",
+                                content: "使用def关键字定义函数，包括函数名、参数和返回值。"
+                            },
+                            {
+                                subtitle: "参数传递",
+                                content: "Python支持位置参数、关键字参数、默认参数和可变参数。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：递归函数",
+                        description: "使用递归计算阶乘。",
+                        code: `def factorial(n):
+    """计算n的阶乘"""
+    if n <= 1:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+# 测试函数
+num = 5
+result = factorial(num)
+print(f"{num}的阶乘是: {result}")`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：斐波那契数列",
+                        description: "编写递归函数计算斐波那契数列。",
+                        code: `# 编写斐波那契数列递归函数...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "函数定义时使用的关键字是？",
+                        options: [
+                            "function",
+                            "def",
+                            "define",
+                            "func"
+                        ],
+                        correct: 1,
+                        explanation: "Python使用def关键字定义函数。"
+                    }
+                ]
+            },
+            5: {
+                title: "课题五：数据结构",
+                description: "学习数组、链表、栈、队列等常用数据结构。",
+                topics: ["数组", "链表", "栈", "队列", "树结构", "图结构"],
+                concepts: [
+                    {
+                        title: "5.1 线性数据结构",
+                        content: "线性数据结构是元素按线性顺序排列的数据组织方式。",
+                        details: [
+                            {
+                                subtitle: "列表 (List)",
+                                content: "Python内置的动态数组，支持增删改查操作。"
+                            },
+                            {
+                                subtitle: "栈 (Stack)",
+                                content: "后进先出(LIFO)的数据结构，支持push和pop操作。"
+                            },
+                            {
+                                subtitle: "队列 (Queue)",
+                                content: "先进先出(FIFO)的数据结构，支持enqueue和dequeue操作。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：栈的实现",
+                        description: "使用列表实现栈数据结构。",
+                        code: `class Stack:
+    def __init__(self):
+        self.items = []
+    
+    def push(self, item):
+        self.items.append(item)
+    
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
+        return None
+    
+    def is_empty(self):
+        return len(self.items) == 0
+    
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+        return None
+
+# 使用栈
+stack = Stack()
+stack.push(1)
+stack.push(2)
+stack.push(3)
+print(stack.pop())  # 输出: 3
+print(stack.peek())  # 输出: 2`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：队列实现",
+                        description: "使用列表实现队列数据结构。",
+                        code: `# 编写队列类的实现...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "栈的特点是？",
+                        options: [
+                            "先进先出",
+                            "后进先出",
+                            "随机访问",
+                            "双向操作"
+                        ],
+                        correct: 1,
+                        explanation: "栈是后进先出(LIFO)的数据结构。"
+                    }
+                ]
+            },
+            6: {
+                title: "课题六：搜索与排序",
+                description: "学习线性搜索、二分搜索和各种排序算法。",
+                topics: ["线性搜索", "二分搜索", "选择排序", "插入排序", "快速排序"],
+                concepts: [
+                    {
+                        title: "6.1 搜索算法",
+                        content: "在数据集合中查找特定元素的算法。",
+                        details: [
+                            {
+                                subtitle: "线性搜索",
+                                content: "从第一个元素开始逐个检查，直到找到目标。"
+                            },
+                            {
+                                subtitle: "二分搜索",
+                                content: "在有序数组中，每次比较中间元素，缩小搜索范围。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：二分搜索",
+                        description: "实现二分搜索算法。",
+                        code: `def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+# 测试
+numbers = [1, 3, 5, 7, 9, 11, 13]
+index = binary_search(numbers, 7)
+print(f"元素7的索引: {index}")`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：冒泡排序",
+                        description: "实现冒泡排序算法。",
+                        code: `# 编写冒泡排序算法...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "二分搜索的前提条件是？",
+                        options: [
+                            "数组必须有序",
+                            "数组必须无序",
+                            "数组长度必须为偶数",
+                            "数组元素必须唯一"
+                        ],
+                        correct: 0,
+                        explanation: "二分搜索要求数组必须是有序的。"
+                    }
+                ]
+            },
+            7: {
+                title: "课题七：文本文件处理",
+                description: "学习文件读写、字符串处理和CSV操作。",
+                topics: ["文件读写", "字符串处理", "CSV操作", "文本分析", "数据处理"],
+                concepts: [
+                    {
+                        title: "7.1 文件操作",
+                        content: "Python提供了强大的文件操作功能。",
+                        details: [
+                            {
+                                subtitle: "文件读写",
+                                content: "使用open()函数打开文件，支持读、写、追加等模式。"
+                            },
+                            {
+                                subtitle: "CSV处理",
+                                content: "使用csv模块处理CSV格式的数据文件。"
+                            }
+                        ]
+                    }
+                ],
+                examples: [
+                    {
+                        title: "示例：文件处理",
+                        description: "读取文件并统计词频。",
+                        code: `def count_words(filename):
+    word_count = {}
+    
+    with open(filename, 'r', encoding='utf-8') as file:
+        for line in file:
+            words = line.lower().split()
+            for word in words:
+                word = word.strip('.,!?;:"')
+                if word:
+                    word_count[word] = word_count.get(word, 0) + 1
+    
+    return word_count
+
+# 使用示例
+result = count_words('sample.txt')
+print(f"总共{len(result)}个不同的单词")
+print("最常见的5个单词:")
+for word, count in sorted(result.items(), key=lambda x: x[1], reverse=True)[:5]:
+    print(f"{word}: {count}")`
+                    }
+                ],
+                practices: [
+                    {
+                        title: "练习：CSV文件处理",
+                        description: "读取CSV文件并进行数据分析。",
+                        code: `# 编写CSV文件处理程序...`
+                    }
+                ],
+                quiz: [
+                    {
+                        question: "读取文件时，使用什么模式可以确保文件存在？",
+                        options: [
+                            "'w' 模式",
+                            "'r' 模式",
+                            "'a' 模式",
+                            "'x' 模式"
+                        ],
+                        correct: 1,
+                        explanation: "'r' 模式用于读取，如果文件不存在会报错。"
+                    }
+                ]
+            }
+        };
+        
+        let currentChapter = 1;
+        let pythonEditor = null;
+        let userProgress = JSON.parse(localStorage.getItem('pythonProgress') || '{}');
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePythonEditor();
+            loadChaptersList();
+            loadChapter(1);
+            updateProgress();
+        });
+        
+        // 初始化Python编辑器
+        function initializePythonEditor() {
+            const editors = document.querySelectorAll('textarea[id$="-code"]');
+            editors.forEach(editorElement => {
+                if (typeof CodeMirror !== 'undefined') {
+                    const editor = CodeMirror.fromTextArea(editorElement, {
+                        mode: 'text/x-python',
+                        theme: 'monokai',
+                        lineNumbers: true,
+                        autoCloseBrackets: true,
+                        matchBrackets: true,
+                        indentUnit: 4,
+                        tabSize: 4,
+                        lineWrapping: true,
+                        extraKeys: {
+                            'Tab': function(cm) {
+                                cm.replaceSelection('    ');
+                            }
+                        }
+                    });
+                    
+                    // 保存编辑器实例
+                    if (editorElement.id === 'calculator-code') {
+                        window.calculatorEditor = editor;
+                    } else if (editorElement.id === 'grades-code') {
+                        window.gradesEditor = editor;
+                    }
+                }
+            });
+        }
+        
+        // 加载课题列表
+        function loadChaptersList() {
+            const container = document.getElementById('chapters-list');
+            container.innerHTML = '';
+            
+            Object.keys(pythonChapters).forEach(chapterNum => {
+                const chapter = pythonChapters[chapterNum];
+                const isCompleted = userProgress.completedChapters && userProgress.completedChapters.includes(parseInt(chapterNum));
+                const isActive = parseInt(chapterNum) === currentChapter;
+                
+                const chapterElement = document.createElement('div');
+                chapterElement.className = `chapter-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+                chapterElement.onclick = () => loadChapter(parseInt(chapterNum));
+                
+                chapterElement.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-semibold text-white text-sm">课题${chapterNum}</h4>
+                            <p class="text-gray-400 text-xs">${chapter.topics.join('、')}</p>
+                        </div>
+                        <span class="text-xs bg-${isCompleted ? 'green' : 'blue'}-500/20 text-${isCompleted ? 'green' : 'blue'}-300 px-2 py-1 rounded">
+                            ${chapter.topics.length}个主题
+                        </span>
+                    </div>
+                `;
+                
+                container.appendChild(chapterElement);
+            });
+        }
+        
+        // 加载章节内容
+        function loadChapter(chapterNum) {
+            currentChapter = chapterNum;
+            const chapter = pythonChapters[chapterNum];
+            
+            // 更新侧边栏状态
+            document.querySelectorAll('.chapter-item').forEach((item, index) => {
+                item.classList.remove('active');
+                if (index + 1 === chapterNum) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 更新标题和描述
+            document.getElementById('chapter-title').textContent = chapter.title;
+            document.getElementById('chapter-description').textContent = chapter.description;
+            
+            // 加载核心概念
+            loadConcepts(chapter);
+            
+            // 加载代码示例
+            loadExamples(chapter);
+            
+            // 加载实践练习
+            loadPractices(chapter);
+            
+            // 加载知识测验
+            loadQuiz(chapter);
+            
+            showNotification(`正在加载${chapter.title}...`, 'success');
+        }
+        
+        // 加载核心概念
+        function loadConcepts(chapter) {
+            const container = document.getElementById('chapter-concepts');
+            container.innerHTML = '';
+            
+            chapter.concepts.forEach(concept => {
+                const conceptElement = document.createElement('div');
+                conceptElement.className = 'mb-6';
+                
+                let detailsHTML = '';
+                concept.details.forEach(detail => {
+                    let listHTML = '';
+                    if (detail.list) {
+                        listHTML = `<ul class="space-y-1 text-sm text-gray-300 mt-2">${
+                            detail.list.map(item => `<li>• ${item}</li>`).join('')
+                        }</ul>`;
+                    }
+                    
+                    detailsHTML += `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-white mb-2">${detail.subtitle}</h4>
+                            <p class="text-gray-300 text-sm">${detail.content}</p>
+                            ${listHTML}
+                        </div>
+                    `;
+                });
+                
+                conceptElement.innerHTML = `
+                    <h3 class="text-lg font-semibold text-white mb-3">${concept.title}</h3>
+                    <p class="text-gray-300 mb-4">${concept.content}</p>
+                    ${detailsHTML}
+                `;
+                
+                container.appendChild(conceptElement);
+            });
+        }
+        
+        // 加载代码示例
+        function loadExamples(chapter) {
+            const container = document.getElementById('chapter-examples');
+            container.innerHTML = '';
+            
+            chapter.examples.forEach(example => {
+                const exampleElement = document.createElement('div');
+                exampleElement.className = 'mb-6';
+                
+                exampleElement.innerHTML = `
+                    <h3 class="text-lg font-semibold text-white mb-3">${example.title}</h3>
+                    <p class="text-gray-300 text-sm mb-4">${example.description}</p>
+                    <div class="code-block">
+                        ${highlightPythonCode(example.code)}
+                    </div>
+                `;
+                
+                container.appendChild(exampleElement);
+            });
+        }
+        
+        // 加载实践练习
+        function loadPractices(chapter) {
+            const container = document.getElementById('chapter-practices');
+            container.innerHTML = '';
+            
+            chapter.practices.forEach((practice, index) => {
+                const practiceElement = document.createElement('div');
+                practiceElement.className = 'mb-6';
+                
+                practiceElement.innerHTML = `
+                    <h3 class="text-lg font-semibold text-white mb-3">${practice.title}</h3>
+                    <p class="text-gray-300 text-sm mb-4">${practice.description}</p>
+                    <div class="code-editor mb-4">
+                        <textarea id="practice-${index}-code" placeholder="${practice.code}"></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="btn-primary px-4 py-2 text-sm" onclick="runPracticeCode(${index})">
+                            运行代码
+                        </button>
+                        <button class="btn-secondary px-4 py-2 text-sm" onclick="showPracticeHint(${index})">
+                            查看提示
+                        </button>
+                        <button class="btn-secondary px-4 py-2 text-sm" onclick="showPracticeSolution(${index})">
+                            查看答案
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(practiceElement);
+            });
+            
+            // 重新初始化编辑器
+            setTimeout(() => {
+                initializePythonEditor();
+            }, 100);
+        }
+        
+        // 加载知识测验
+        function loadQuiz(chapter) {
+            const container = document.getElementById('chapter-quiz');
+            container.innerHTML = '';
+            
+            chapter.quiz.forEach((quiz, index) => {
+                const quizElement = document.createElement('div');
+                quizElement.className = 'mb-6';
+                
+                quizElement.innerHTML = `
+                    <h3 class="text-lg font-semibold text-white mb-3">问题${index + 1}：${quiz.question}</h3>
+                    <div class="space-y-2 mb-4">
+                        ${quiz.options.map((option, optIndex) => `
+                            <div class="quiz-option" onclick="selectQuizOption(this, ${optIndex}, ${quiz.correct}, ${index})">
+                                <span>${option}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-result-${index}" class="hidden">
+                        <div class="glass-card p-4 rounded-lg">
+                            <p class="text-gray-300 mb-2">${quiz.explanation}</p>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(quizElement);
+            });
+            
+            container.innerHTML += `
+                <div class="text-center">
+                    <button class="btn-primary px-6 py-2" onclick="submitChapterQuiz()">
+                        提交测验
+                    </button>
+                </div>
+            `;
+        }
+        
+        // 高亮Python代码
+        function highlightPythonCode(code) {
+            return code.replace(/#(.*)/g, '<span class="comment">#$1</span>')
+                        .replace(/\b(def|if|elif|else|for|while|try|except|class|import|from|return|break|continue)\b/g, '<span class="keyword">$1</span>')
+                        .replace(/\b(print|input|len|sum|max|min|range|enumerate|float|int|str|bool)\b/g, '<span class="function">$1</span>')
+                        .replace(/"([^"]*)"/g, '<span class="string">"$1"</span>')
+                        .replace(/'([^']*)'/g, '<span class="string">\'$1\'</span>')
+                        .replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+        }
+        
+        // 运行练习代码
+        function runPracticeCode(practiceIndex) {
+            let editor;
+            if (practiceIndex === 0) {
+                editor = window.calculatorEditor;
+            } else if (practiceIndex === 1) {
+                editor = window.gradesEditor;
+            }
+            
+            if (!editor) {
+                showNotification('编辑器未初始化', 'error');
+                return;
+            }
+            
+            const code = editor.getValue().trim();
+            if (!code) {
+                showNotification('请输入代码', 'error');
+                return;
+            }
+            
+            // 模拟代码执行
+            const result = simulatePythonExecution(code, practiceIndex);
+            displayExecutionResult(result);
+            
+            showNotification('代码运行成功！', 'success');
+        }
+        
+        // 模拟Python代码执行
+        function simulatePythonExecution(code, practiceIndex) {
+            const practiceHints = [
+                "提示：使用input()获取用户输入，然后用float()或int()转换数据类型，进行四则运算。",
+                "提示：使用列表存储成绩，用sum()和len()计算平均分，用max()和min()找出最高最低分。"
+            ];
+            
+            if (practiceIndex === 0) {
+                return {
+                    success: true,
+                    output: '请输入第一个数: 10\n请输入第二个数: 5\n请选择运算(+,-,*,/): +\n结果是: 15.0',
+                    message: '计算器程序运行成功'
+                };
+            } else if (practiceIndex === 1) {
+                return {
+                    success: true,
+                    output: '添加后: [85, 92, 78, 96, 88, 90]\n平均分: 88.17\n最高分: 96, 最低分: 78\n学生1: 85分\n学生2: 92分\n学生3: 78分\n学生4: 96分\n学生5: 88分\n学生6: 90分',
+                    message: '成绩统计程序运行成功'
+                };
+            } else {
+                return {
+                    success: true,
+                    output: '程序运行完成',
+                    message: practiceHints[practiceIndex] || '代码语法正确'
+                };
+            }
+        }
+        
+        // 显示执行结果
+        function displayExecutionResult(result) {
+            showNotification(`${result.message}\n${result.output}`, 'success', 5000);
+        }
+        
+        // 显示练习提示
+        function showPracticeHint(practiceIndex) {
+            const hints = [
+                "提示：使用input()获取用户输入，用float()转换数据类型，然后进行四则运算。可以使用if-elif-else结构判断运算类型。",
+                "提示：使用列表存储成绩，用append()添加新成绩，用sum()和len()计算平均分，用max()和min()找出最高最低分。"
+            ];
+            
+            showNotification(hints[practiceIndex] || '提示即将推出', 'success', 5000);
+        }
+        
+        // 显示练习答案
+        function showPracticeSolution(practiceIndex) {
+            const solutions = [
+                `# 简单计算器
+def calculator():
+    num1 = float(input("请输入第一个数: "))
+    num2 = float(input("请输入第二个数: "))
+    op = input("请选择运算(+,-,*,/): ")
+    
+    if op == '+':
+        result = num1 + num2
+    elif op == '-':
+        result = num1 - num2
+    elif op == '*':
+        result = num1 * num2
+    elif op == '/':
+        if num2 != 0:
+            result = num1 / num2
+        else:
+            print("除数不能为零！")
+            return
+    else:
+        print("无效的运算符号！")
+        return
+    
+    print(f"结果是: {result}")
+
+calculator()`,
+                `# 成绩统计
+scores = [85, 92, 78, 96, 88]
+
+# 添加新成绩
+new_score = float(input("请输入新成绩: "))
+scores.append(new_score)
+
+# 计算统计信息
+average = sum(scores) / len(scores)
+max_score = max(scores)
+min_score = min(scores)
+
+print(f"成绩列表: {scores}")
+print(f"平均分: {average:.2f}")
+print(f"最高分: {max_score}")
+print(f"最低分: {min_score}")
+
+# 显示每个学生的成绩
+for i, score in enumerate(scores, 1):
+    print(f"学生{i}: {score}分")`
+            ];
+            
+            showNotification('答案示例已生成，请查看代码编辑器', 'success');
+            
+            let editor;
+            if (practiceIndex === 0) {
+                editor = window.calculatorEditor;
+            } else if (practiceIndex === 1) {
+                editor = window.gradesEditor;
+            }
+            
+            if (editor) {
+                editor.setValue(solutions[practiceIndex]);
+            }
+        }
+        
+        // 选择测验选项
+        function selectQuizOption(element, selectedIndex, correctIndex, quizIndex) {
+            // 清除其他选项的选中状态
+            const allOptions = element.parentNode.querySelectorAll('.quiz-option');
+            allOptions.forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 选中当前选项
+            element.classList.add('selected');
+            
+            // 标记正确或错误
+            if (selectedIndex === correctIndex) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('incorrect');
+                // 同时标记正确答案
+                allOptions[correctIndex].classList.add('correct');
+            }
+            
+            // 显示结果
+            const resultDiv = document.getElementById(`quiz-result-${quizIndex}`);
+            resultDiv.classList.remove('hidden');
+        }
+        
+        // 提交章节测验
+        function submitChapterQuiz() {
+            const selectedOptions = document.querySelectorAll('.quiz-option.selected');
+            const correctOptions = document.querySelectorAll('.quiz-option.correct');
+            
+            let correctCount = 0;
+            selectedOptions.forEach((option, index) => {
+                if (option.classList.contains('correct')) {
+                    correctCount++;
+                }
+            });
+            
+            const totalQuestions = document.querySelectorAll('.quiz-option').length / 4; // 每题4个选项
+            const score = Math.round((correctCount / totalQuestions) * 100);
+            
+            // 记录完成状态
+            if (!userProgress.completedChapters) {
+                userProgress.completedChapters = [];
+            }
+            
+            if (score >= 60 && !userProgress.completedChapters.includes(currentChapter)) {
+                userProgress.completedChapters.push(currentChapter);
+                localStorage.setItem('pythonProgress', JSON.stringify(userProgress));
+                updateProgress();
+                loadChaptersList();
+            }
+            
+            showNotification(`测验完成！得分：${score}%`, score >= 60 ? 'success' : 'error');
+        }
+        
+        // 更新学习进度
+        function updateProgress() {
+            const completedChapters = userProgress.completedChapters || [];
+            const totalChapters = Object.keys(pythonChapters).length;
+            const progressPercent = Math.round((completedChapters.length / totalChapters) * 100);
+            
+            document.getElementById('overall-progress').textContent = progressPercent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            document.getElementById('completed-chapters').textContent = `${completedChapters.length}/${totalChapters}`;
+        }
+        
+        // 打开Python编辑器
+        function openPythonEditor() {
+            showNotification('Python编辑器即将推出', 'success');
+        }
+        
+        // 打开调试工具
+        function openDebugger() {
+            showNotification('调试工具即将推出', 'success');
+        }
+        
+        // 打开算法可视化
+        function openVisualizer() {
+            showNotification('算法可视化即将推出', 'success');
+        }
+        
+        // 打开知识测验
+        function openQuiz() {
+            // 滚动到测验部分
+            document.getElementById('chapter-quiz').scrollIntoView({ behavior: 'smooth' });
+            showNotification('已跳转到知识测验', 'success');
+        }
+        
+        // 显示移动版
+        function showMobileApp() {
+            window.location.href = 'mobile-app.html';
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+    </script>
+</body>
+</html>

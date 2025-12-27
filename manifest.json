@@ -1,0 +1,42 @@
+{
+  "name": "SQL训练营 - 移动版",
+  "short_name": "SQL训练营",
+  "description": "专业的SQL学习和练习平台，支持多种互动练习模式",
+  "start_url": "/mobile-app.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00f5ff",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQwKSIvPgo8cGF0aCBkPSJNOTYgNjBDODIuMTkyOSA2MCA3MSA3MS4xOTI5IDcxIDg1VjEwN0g2MFYxMDdINjBWMTM1SDcxVjEzNUg3MVYxMDdIOTZWMTM1SDEwN1YxMDdIMTk2Vjg1QzE5NiA3MS4xOTI5IDE4NC44MDcgNjAgMTcxIDYwSDk2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTg1IDEwN1YxMzVINzRWMTM1SDc0VjEwN0g4NVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik05NiAxMDdWMTM1SDEwN1YxMDdIOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBmNWZmO3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwZmY7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTA0IiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHBhdGggZD0iTTI1NiAxNjBDMjA5LjU0MyAxNjAgMTcyIDE5Ny41NDMgMTcyIDI0NFYzMDRIMTYwVjMwNEgxNjBWNDAwSDE3MlY0MDBIMTcyVjMwNEgyNTZWNDAwSDI2OFYzMDRIMzIwVjI0NEMzMjAgMTk3LjU0MyAyODIuNDU3IDE2MCAyMzYgMTYwSDI1NloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yMjQgMzA0VjQwMEgyMTJWNDAwSDIxMlYzMDRIMjI0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI1NiAzMDRWNDAwSDI2OFYzMDRIMjU2WiIgZmlsbD0id2hpdGUiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQwIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwZjVmZjtzdG9wLW9wYWNpdHk6MSIgLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4MGZmO3N0b3Atb3BhY2l0eToxIiAvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjY2NyIgdmlld0JveD0iMCAwIDM3NSA2NjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzNzUiIGhlaWdodD0iNjY3IiByeD0iNDAiIGZpbGw9IiMwZjE3MmEiLz4KPHRleHQgeD0iMTg3LjUiIHk9IjMzMy41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgZm9udC1mYW1pbHk9IkFyaWFsIj5TUUzigYsmxpanqKE8PC90ZXh0Pgo8L3N2Zz4=",
+      "sizes": "375x667",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "features": [
+    "offline",
+    "push-notifications",
+    "responsive"
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DSE SQL 訓練營
+Name[zh_TW]=DSE SQL 訓練營
+Comment=啟動 DSE SQL 訓練營 Web 服務器
+Comment[zh_TW]=啟動 DSE SQL 訓練營 Web 服務器
+Exec=python3 "/home/yivh/桌面/web surver/service-manager.py"
+Path=/home/yivh/桌面/web surver
+Icon=/home/yivh/下載/1202768.png
+Terminal=false
+Categories=Education;Development;Network;
+StartupNotify=true
+MimeType=
+

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题库练习 - SQL训练营</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sql/sql.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 245, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+            border: 1px solid rgba(0, 245, 255, 0.5);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .difficulty-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border-color: rgba(0, 245, 255, 0.5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .question-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .sql-editor {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sql-editor .CodeMirror {
+            height: 300px;
+            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .sql-editor .CodeMirror-gutters {
+            background: #334155;
+            border-right: 1px solid #475569;
+        }
+        
+        .sql-editor .CodeMirror-linenumber {
+            color: #64748b;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .sql-editor .CodeMirror {
+                height: 200px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold gradient-text">SQL训练营</h1>
+                    <span class="ml-4 text-sm text-gray-300">题库练习</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showHome()" class="btn-secondary px-4 py-2 text-sm">返回首页</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">SQL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <div class="pt-20 pb-8">
+        <!-- 头部区域 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text mb-4">题库练习</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">
+                    从基础查询到高级优化，循序渐进掌握SQL技能。所有题目均来自真实考试题库，包含详细解析。
+                </p>
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="stats-grid mb-8">
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="total-questions">35</div>
+                    <div class="text-sm text-gray-300 mt-1">总题目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="completed-questions">0</div>
+                    <div class="text-sm text-gray-300 mt-1">已完成</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="accuracy-rate">0%</div>
+                    <div class="text-sm text-gray-300 mt-1">正确率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="total-points">500</div>
+                    <div class="text-sm text-gray-300 mt-1">总积分</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 难度选择 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">选择难度</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('beginner')" id="btn-beginner">
+                        <div class="font-semibold text-lg mb-1">初级</div>
+                        <div class="text-sm text-gray-400">基础查询</div>
+                        <div class="text-xs text-gray-500 mt-1">5-10分/题</div>
+                    </button>
+                    <button class="difficulty-btn btn-secondary py-4 text-center active" onclick="selectDifficulty('intermediate')" id="btn-intermediate">
+                        <div class="font-semibold text-lg mb-1">中级</div>
+                        <div class="text-sm text-gray-400">复杂查询</div>
+                        <div class="text-xs text-gray-500 mt-1">20-30分/题</div>
+                    </button>
+                    <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('advanced')" id="btn-advanced">
+                        <div class="font-semibold text-lg mb-1">高级</div>
+                        <div class="text-sm text-gray-400">优化技巧</div>
+                        <div class="text-xs text-gray-500 mt-1">35-45分/题</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 题目列表 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">题目列表</h3>
+                <div class="flex items-center space-x-4">
+                    <select id="exercise-filter" class="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" onchange="filterByExercise()">
+                        <option value="">所有练习</option>
+                        <option value="16">练习16 - JOIN Tables</option>
+                        <option value="17">练习17 - INTERSECT & MINUS</option>
+                        <option value="18">练习18 - Natural JOIN</option>
+                        <option value="19">练习19 - 多表连接与分组</option>
+                        <option value="20">练习20 - IIF函数</option>
+                        <option value="21">练习21 - 医疗数据库和成绩管理</option>
+                    </select>
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="shuffleQuestions()">随机排序</button>
+                </div>
+            </div>
+            
+            <div id="questions-list" class="space-y-4">
+                <!-- 题目将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 题目详情模态框 -->
+    <div id="question-modal" class="modal">
+        <div class="modal-content w-full max-w-4xl">
+            <div id="modal-body">
+                <!-- 题目详情内容 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- 引入题库数据和主要脚本 -->
+    <script src="sql-questions-data.js"></script>
+    <script src="practice.js"></script>
+</body>
+</html>

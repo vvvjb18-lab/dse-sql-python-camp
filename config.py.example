@@ -1,0 +1,19 @@
+# 配置文件示例
+# 复制此文件为 config.py 并填入你的 API 密钥
+
+# 智谱AI API 密钥
+ZHIPUAI_API_KEY = "your_zhipuai_api_key_here"
+
+# SiliconFlow API 密钥
+SILICONFLOW_API_KEY = "your_siliconflow_api_key_here"
+
+# Flask 密钥（用于会话管理）
+SECRET_KEY = "your_secret_key_here"
+
+# 服务端口
+PORT = 5000
+
+# 域名配置（可选）
+DOMAIN_NAME = ""
+PUBLIC_IP = ""
+

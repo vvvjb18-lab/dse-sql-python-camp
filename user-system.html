@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用戶中心 - DSE SQL 訓練營</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="lang.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(18px);
+        }
+        .input-base {
+            @apply w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+            color: #111827 !important;
+        }
+        .input-base::placeholder {
+            color: #9ca3af;
+        }
+        .input-base::-webkit-input-placeholder {
+            color: #9ca3af;
+        }
+        .input-base::-moz-placeholder {
+            color: #9ca3af;
+        }
+        .input-base:-ms-input-placeholder {
+            color: #9ca3af;
+        }
+        .btn-primary {
+            @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 shadow-lg shadow-blue-500/25 transition;
+        }
+        .btn-secondary {
+            @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium text-slate-100 bg-slate-700/70 hover:bg-slate-600/90 border border-slate-500/60 transition;
+        }
+        .badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        .badge-green {
+            @apply badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/40;
+        }
+        .badge-blue {
+            @apply badge bg-sky-500/15 text-sky-300 border border-sky-500/40;
+        }
+        .badge-amber {
+            @apply badge bg-amber-500/15 text-amber-300 border border-amber-500/40;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- 導航欄 -->
+    <nav class="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-40 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/40">
+                        <span class="text-white font-bold text-lg">SQL</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-100">DSE SQL 訓練營</div>
+                        <div class="text-xs text-slate-400">用戶中心 · 登入與個人資料</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6 text-sm">
+                    <a href="index.html" class="text-slate-300 hover:text-sky-400" data-i18n-key="nav.home">訓練平台</a>
+                    <a href="guide.html" class="text-slate-300 hover:text-sky-400" data-i18n-key="nav.guide">學習指南</a>
+                    <a href="practice.html" class="text-slate-300 hover:text-sky-400" data-i18n-key="nav.practice">題庫練習</a>
+                    <a href="progress.html" class="text-slate-300 hover:text-sky-400" data-i18n-key="nav.progress">學習進度</a>
+                    <a href="interactive.html" class="text-slate-300 hover:text-sky-400" data-i18n-key="nav.interactive">互動練習</a>
+                    <a href="user-system.html" class="text-sky-400 border-b border-sky-500 pb-1" data-i18n-key="nav.user">用戶中心</a>
+                    <div class="hidden md:flex items-center space-x-2 text-[11px] text-slate-300 ml-4">
+                        <span data-i18n-key="lang.label">語言</span>
+                        <select id="lang-switcher" class="bg-slate-900/70 border border-slate-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                            <option value="zh-TW" data-i18n-key="lang.zhTW">繁體</option>
+                            <option value="zh-CN" data-i18n-key="lang.zhCN">簡體</option>
+                            <option value="en" data-i18n-key="lang.en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主內容 -->
+    <main class="py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- 標題區 -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-slate-50 mb-2">
+                            <span data-i18n-key="user.title">用戶中心</span>
+                            <span class="ml-2 text-base font-normal text-sky-400" data-i18n-key="user.subtitle">Sign in · Profile · Progress</span>
+                        </h1>
+                        <p class="text-sm text-slate-400" data-i18n-key="user.description">
+                            在這裡管理你的登入帳號、個人資料，並查看與同步學習進度。
+                        </p>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-2 text-xs text-slate-400">
+                        <span class="badge badge-green" data-i18n-key="user.badge.sqlite">SQLite 持久化</span>
+                        <span class="badge badge-blue" data-i18n-key="user.badge.ai">AI 學習助手已啟用</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <!-- 登入 / 註冊 -->
+                <div id="auth-section" class="space-y-6 lg:col-span-1">
+                    <!-- 登入卡片 -->
+                    <section id="login-card" class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-slate-50 flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm mr-2">1</span>
+                                <span data-i18n-key="login.title">登入</span>
+                            </h2>
+                            <span class="badge badge-blue" data-i18n-key="login.badgeExisting">現有帳號</span>
+                        </div>
+                        <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                            <div>
+                                <label for="login-username" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="login.username">用戶名 / 電郵</label>
+                                <input id="login-username" type="text" class="input-base" placeholder="輸入用戶名或電子郵件" data-i18n-key="login.username.placeholder">
+                        </div>
+                        <div>
+                                <label for="login-password" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="login.password">密碼</label>
+                                <input id="login-password" type="password" class="input-base" placeholder="輸入密碼" data-i18n-key="login.password.placeholder">
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-slate-400">
+                                <label class="inline-flex items-center space-x-2">
+                                    <input id="remember-me" type="checkbox" class="rounded border-slate-600 bg-slate-900 text-sky-500 focus:ring-sky-500">
+                                    <span data-i18n-key="login.remember">在此裝置記住登入狀態</span>
+                                </label>
+                                <button type="button" class="text-sky-400 hover:text-sky-300" data-i18n-key="login.forgot">忘記密碼？</button>
+                        </div>
+                            <button type="submit" class="btn-primary w-full">
+                                <span class="mr-1" data-i18n-key="login.submit">登入</span>
+                                <span>→</span>
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- 註冊卡片 -->
+                    <section id="register-card" class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-slate-50 flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-sm mr-2">2</span>
+                                <span data-i18n-key="register.title">註冊</span>
+                            </h2>
+                            <span class="badge badge-amber" data-i18n-key="register.badgeNew">新帳號</span>
+                        </div>
+                        <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+                            <div>
+                                <label for="register-username" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="register.username">用戶名</label>
+                                <input id="register-username" type="text" class="input-base" placeholder="例如：sql_student01" data-i18n-key="register.username.placeholder">
+                            </div>
+                            <div>
+                                <label for="register-email" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="register.email">電子郵件</label>
+                                <input id="register-email" type="email" class="input-base" placeholder="例如：student@example.com" data-i18n-key="register.email.placeholder">
+                            </div>
+                            <div>
+                                <label for="register-password" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="register.password">密碼</label>
+                                <input id="register-password" type="password" class="input-base" placeholder="至少 6 個字符" data-i18n-key="register.password.placeholder">
+                            </div>
+                            <div>
+                                <label for="register-confirm-password" class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="register.confirmPassword">確認密碼</label>
+                                <input id="register-confirm-password" type="password" class="input-base" placeholder="再次輸入密碼" data-i18n-key="register.confirmPassword.placeholder">
+                            </div>
+                            <p class="text-[11px] text-slate-400">
+                                <span data-i18n-key="register.tosText">提交即表示你同意我們的</span>
+                                <a href="#" class="text-sky-400 hover:text-sky-300 underline" data-i18n-key="register.tosLink">使用條款</a>
+                                <span> </span>
+                                <span>和</span>
+                                <span> </span>
+                                <a href="#" class="text-sky-400 hover:text-sky-300 underline" data-i18n-key="register.privacyLink">私隱政策</a>。
+                            </p>
+                            <button type="submit" class="btn-secondary w-full">
+                                <span class="mr-1" data-i18n-key="register.submit">建立新帳號</span>
+                            </button>
+                        </form>
+                    </section>
+                </div>
+
+                <!-- 個人資料 / 學習概覽 -->
+                <div id="profile-section" class="lg:col-span-2 space-y-6">
+                    <!-- 未登入提示 -->
+                    <section id="not-logged-in-view" class="glass-card p-8 hidden">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center border border-slate-700">
+                                <span class="text-3xl">👤</span>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-50 mb-1" data-i18n-key="notLoggedIn.title">尚未登入</h2>
+                                <p class="text-sm text-slate-400" data-i18n-key="notLoggedIn.desc">
+                                    登入後可以同步學習進度、保存題目完成情況，並在不同裝置之間延續學習。
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 已登入視圖 -->
+                    <section id="logged-in-view" class="space-y-6 hidden">
+                        <!-- 頂部：基本資料 + 快速動作 -->
+                        <div class="glass-card p-6 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-2xl">
+                                    <span id="profile-avatar-initial" class="text-white font-semibold">U</span>
+                                </div>
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <h2 id="profile-username" class="text-xl font-semibold text-slate-50">用戶名稱</h2>
+                                        <span class="badge badge-green" id="profile-level-badge">Lv.1</span>
+                    </div>
+                                    <p id="profile-email" class="text-xs text-slate-400">email@example.com</p>
+                                    <p id="profile-join-date" class="text-[11px] text-slate-500 mt-1">加入日期：--</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button type="button" class="btn-secondary text-xs" onclick="syncProgress()">
+                                    🔄 <span data-i18n-key="profile.syncButton">同步學習進度</span>
+                                </button>
+                                <button type="button" class="btn-primary text-xs" onclick="handleLogout()">
+                                    <span data-i18n-key="profile.logoutButton">登出</span>
+                                </button>
+                        </div>
+                    </div>
+
+                        <!-- 中部：學習數據概覽 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="glass-card p-4">
+                                <div class="text-xs text-slate-400 mb-1" data-i18n-key="profile.stats.completed">已完成題目</div>
+                                <div id="profile-completed" class="text-2xl font-semibold text-sky-400">0</div>
+                                <div class="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                    <div id="profile-progress-bar" class="h-1.5 bg-gradient-to-r from-sky-500 to-emerald-400 w-0"></div>
+                                </div>
+                            </div>
+                            <div class="glass-card p-4">
+                                <div class="text-xs text-slate-400 mb-1" data-i18n-key="profile.stats.studyTime">累計學習時間</div>
+                                <div id="profile-study-time" class="text-2xl font-semibold text-emerald-400">0 分鐘</div>
+                                <div class="text-[11px] text-slate-500 mt-1" id="profile-study-hours">約 0.0 小時</div>
+                            </div>
+                            <div class="glass-card p-4">
+                                <div class="text-xs text-slate-400 mb-1" data-i18n-key="profile.stats.totalScore">總積分</div>
+                                <div id="profile-total-score" class="text-2xl font-semibold text-amber-300">0</div>
+                                <div class="text-[11px] text-slate-500 mt-1" id="profile-badge-info" data-i18n-key="profile.stats.badgeInfo">完成更多題目以解鎖成就</div>
+                    </div>
+                </div>
+
+                        <!-- 下部：可編輯個人資料 -->
+                        <section class="glass-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-slate-50" data-i18n-key="profile.sectionTitle">個人資料</h3>
+                                <span class="text-[11px] text-slate-500" data-i18n-key="profile.sectionHint">這些資訊只會在本訓練營內使用</span>
+                    </div>
+                            <form id="profile-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="handleProfileUpdate(event)">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="profile.displayName">顯示名稱</label>
+                                    <input id="profile-full-name" type="text" class="input-base" placeholder="想讓同學看到的名稱" data-i18n-key="profile.displayName.placeholder">
+                    </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="profile.location">所在地</label>
+                                    <input id="profile-location" type="text" class="input-base" placeholder="例如：香港 / 九龍 / 新界" data-i18n-key="profile.location.placeholder">
+                </div>
+                        <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="profile.phone">聯絡電話（選填）</label>
+                                    <input id="profile-phone" type="text" class="input-base" placeholder="只作通知用途，不會公開" data-i18n-key="profile.phone.placeholder">
+                        </div>
+                        <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="profile.birth">生日（選填）</label>
+                                    <input id="profile-birth-date" type="date" class="input-base">
+                        </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-slate-300 mb-1" data-i18n-key="profile.bio">個人簡介</label>
+                                    <textarea id="profile-bio" rows="3" class="input-base" placeholder="簡單介紹自己，例如對 SQL / Python 的興趣或目標。" data-i18n-key="profile.bio.placeholder"></textarea>
+                    </div>
+                                <div class="md:col-span-2 flex items-center justify-between mt-2">
+                                    <div class="text-[11px] text-slate-500" data-i18n-key="profile.tip">
+                                        小提示：你可以在任意頁面右下角點擊 🤖，請 AI 幫你規劃專屬 SQL 學習路線。
+                    </div>
+                                    <button type="submit" class="btn-primary text-xs">
+                                        <span data-i18n-key="profile.save">儲存個人資料</span>
+                    </button>
+                </div>
+            </form>
+                        </section>
+                        
+                        <!-- AI 模型選擇設置 -->
+                        <section class="glass-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-slate-50">🤖 AI 模型偏好</h3>
+                                <span class="text-[11px] text-slate-500">選擇你喜歡的 AI 助手模型</span>
+                </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-2">選擇 AI 模型</label>
+                                    <select 
+                                        id="user-ai-model-selector" 
+                                        class="w-full input-base"
+                                        style="color: #111827;"
+                                        onchange="handleAIModelChange(event)"
+                                    >
+                                        <option value="glm-4-flash-250414">GLM-4-Flash (智譜AI) - 快速響應，適合一般問答</option>
+                                        <option value="deepseek-ai/DeepSeek-V3.2">DeepSeek-V3.2 - 強大的推理能力</option>
+                                        <option value="Qwen/Qwen2.5-Coder-32B-Instruct">Qwen2.5-Coder-32B - 專為代碼任務優化</option>
+                                    </select>
+                </div>
+                                <div class="text-[11px] text-slate-400">
+                                    <p>💡 提示：你可以在任意頁面的 AI 助手側邊欄中隨時切換模型，設置會自動保存。</p>
+                </div>
+                </div>
+                        </section>
+                    </section>
+        </div>
+    </div>
+        </div>
+    </main>
+
+    <!-- 通知條 -->
+    <div id="user-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 shadow-lg shadow-slate-900/80 hidden z-50"></div>
+
+    <!-- 用戶 API & 主邏輯 -->
+    <script src="user-api.js"></script>
+    <script>
+        let currentUser = null;
+        let userData = {};
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('user-toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.remove('border-sky-500/60', 'border-emerald-500/60', 'border-rose-500/60');
+            if (type === 'success') toast.classList.add('border-emerald-500/60');
+            else if (type === 'error') toast.classList.add('border-rose-500/60');
+            else toast.classList.add('border-sky-500/60');
+            setTimeout(() => toast.classList.add('hidden'), 2600);
+        }
+
+        async function initializeUserCenter() {
+            if (UserAPI && UserAPI.isLoggedIn()) {
+                currentUser = UserAPI.getCurrentUsername();
+                await loadUserInfo();
+                showLoggedInView();
+            } else {
+                showNotLoggedInView();
+            }
+        }
+
+        function showLoggedInView() {
+            // 隱藏未登入提示
+            document.getElementById('not-logged-in-view').classList.add('hidden');
+            // 顯示已登入視圖
+            document.getElementById('logged-in-view').classList.remove('hidden');
+            // 隱藏登入/註冊模塊
+            const authSection = document.getElementById('auth-section');
+            if (authSection) {
+                authSection.classList.add('hidden');
+            }
+            // 調整個人資料區域佔滿整行
+            const profileSection = document.getElementById('profile-section');
+            if (profileSection) {
+                profileSection.classList.remove('lg:col-span-2');
+                profileSection.classList.add('lg:col-span-3');
+            }
+        }
+
+        function showNotLoggedInView() {
+            // 顯示未登入提示
+            document.getElementById('not-logged-in-view').classList.remove('hidden');
+            // 隱藏已登入視圖
+            document.getElementById('logged-in-view').classList.add('hidden');
+            // 顯示登入/註冊模塊
+            const authSection = document.getElementById('auth-section');
+            if (authSection) {
+                authSection.classList.remove('hidden');
+            }
+            // 恢復個人資料區域的原始寬度
+            const profileSection = document.getElementById('profile-section');
+            if (profileSection) {
+                profileSection.classList.remove('lg:col-span-3');
+                profileSection.classList.add('lg:col-span-2');
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                showToast('請輸入用戶名 / 電郵和密碼', 'error');
+                return;
+            }
+
+            try {
+                const result = await UserAPI.login(username, password);
+                if (result.success) {
+                    currentUser = result.username;
+                    await loadUserInfo();
+                showLoggedInView();
+                    showToast('登入成功', 'success');
+                    document.getElementById('login-form').reset();
+            } else {
+                    showToast(result.error || '登入失敗', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('登入過程發生錯誤', 'error');
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('register-username').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            if (!username || !email || !password) {
+                showToast('請填寫所有註冊欄位', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showToast('密碼長度至少 6 個字符', 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showToast('兩次輸入的密碼不一致', 'error');
+                return;
+            }
+            
+            try {
+                const result = await UserAPI.register(username, email, password);
+                if (result.success) {
+                    showToast('註冊成功，請使用新帳號登入', 'success');
+                    document.getElementById('register-form').reset();
+                } else {
+                    showToast(result.error || '註冊失敗', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('註冊過程發生錯誤', 'error');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await UserAPI.logout();
+            } catch (e) {
+                console.error(e);
+            }
+            currentUser = null;
+            showNotLoggedInView();
+            showToast('已登出', 'success');
+        }
+
+        async function loadUserInfo() {
+            try {
+                const profileRes = await UserAPI.getProfile();
+                const progressRes = await UserAPI.getProgress();
+
+                if (profileRes.success && profileRes.profile) {
+                    const p = profileRes.profile;
+                    document.getElementById('profile-username').textContent = p.username || currentUser;
+                    document.getElementById('profile-email').textContent = p.email || '未設置';
+                    const initial = (p.full_name || p.username || currentUser || 'U').charAt(0).toUpperCase();
+                    document.getElementById('profile-avatar-initial').textContent = initial;
+                    document.getElementById('profile-full-name').value = p.full_name || '';
+                    document.getElementById('profile-location').value = p.location || '';
+                    document.getElementById('profile-phone').value = p.phone || '';
+                    document.getElementById('profile-birth-date').value = p.birth_date || '';
+                    document.getElementById('profile-bio').value = p.bio || '';
+                    document.getElementById('profile-join-date').textContent = '加入日期：' + (p.created_at || '--');
+                }
+
+                if (progressRes.success && progressRes.progress) {
+                    const prog = progressRes.progress;
+                    const completed = (prog.completed_exercises || []).length;
+                    const studyTime = prog.study_time || 0;
+                    const totalScore = prog.total_score || 0;
+                    const level = prog.level || 1;
+
+                    document.getElementById('profile-completed').textContent = completed;
+                    document.getElementById('profile-study-time').textContent = `${studyTime} 分鐘`;
+                    document.getElementById('profile-study-hours').textContent = `約 ${(studyTime / 60).toFixed(1)} 小時`;
+                    document.getElementById('profile-total-score').textContent = totalScore;
+                    document.getElementById('profile-level-badge').textContent = `Lv.${level}`;
+
+                    const percent = Math.max(5, Math.min(100, completed)); // 簡單以完成題數映射
+                    document.getElementById('profile-progress-bar').style.width = `${percent}%`;
+                    document.getElementById('profile-badge-info').textContent =
+                        totalScore >= 1000 ? '你已是 SQL 小高手，繼續挑戰更難題目！' :
+                        totalScore >= 500 ? '表現很好，再多完成幾題即可升級成就章。' :
+                        '完成更多題目以解鎖成就';
+                }
+                
+                // 載入 AI 模型選擇
+                await loadAIModelPreference();
+            } catch (e) {
+                console.error('載入用戶資料失敗:', e);
+            }
+        }
+        
+        async function loadAIModelPreference() {
+            try {
+                if (typeof UserAPI !== 'undefined' && UserAPI.isLoggedIn()) {
+                    const result = await UserAPI.getAIModel();
+                    if (result.success && result.model) {
+                        const selector = document.getElementById('user-ai-model-selector');
+                        if (selector) {
+                            selector.value = result.model;
+                        }
+                    }
+                } else if (typeof getSelectedModel !== 'undefined') {
+                    // 如果未登錄，從 localStorage 讀取
+                    const model = await getSelectedModel();
+                    const selector = document.getElementById('user-ai-model-selector');
+                    if (selector) {
+                        selector.value = model;
+                    }
+                }
+            } catch (e) {
+                console.error('載入 AI 模型偏好失敗:', e);
+            }
+        }
+        
+        async function handleAIModelChange(event) {
+            const selectedModel = event.target.value;
+            try {
+                if (typeof setSelectedModel !== 'undefined') {
+                    const success = await setSelectedModel(selectedModel);
+                    if (success) {
+                        showToast('AI 模型偏好已更新', 'success');
+                        // 清除緩存，確保下次使用新模型
+                        if (typeof clearModelCache !== 'undefined') {
+                            clearModelCache();
+                        }
+                    } else {
+                        showToast('更新 AI 模型偏好失敗', 'error');
+                        // 恢復原來的選擇
+                        await loadAIModelPreference();
+                    }
+                } else {
+                    showToast('AI 模型功能未加載，請刷新頁面', 'error');
+                }
+            } catch (e) {
+                console.error('更新 AI 模型偏好失敗:', e);
+                showToast('更新 AI 模型偏好失敗', 'error');
+                await loadAIModelPreference();
+            }
+        }
+
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+            if (!currentUser) {
+                showToast('請先登入', 'error');
+                return;
+            }
+            const payload = {
+                full_name: document.getElementById('profile-full-name').value.trim(),
+                location: document.getElementById('profile-location').value.trim(),
+                phone: document.getElementById('profile-phone').value.trim(),
+                birth_date: document.getElementById('profile-birth-date').value,
+                bio: document.getElementById('profile-bio').value.trim()
+            };
+            try {
+                const res = await UserAPI.updateProfile(payload);
+                if (res.success) {
+                    showToast('個人資料已更新', 'success');
+                    await loadUserInfo();
+                } else {
+                    showToast(res.error || '更新失敗', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('更新過程發生錯誤', 'error');
+            }
+        }
+
+        async function syncProgress() {
+            // 目前進度已自動同步至 SQLite，這裡可擴展為從瀏覽器 localStorage 舊資料上傳
+            showToast('學習進度已與伺服器保持同步', 'info');
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeUserCenter);
+    </script>
+
+    <!-- 全站 AI 助手 -->
+    <script src="ai-service.js"></script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>
+

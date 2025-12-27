@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合练习 - 100道SQL题目</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sql/sql.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 245, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .difficulty-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border-color: rgba(0, 245, 255, 0.5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+        
+        .question-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #00f5ff;
+        }
+        
+        .nav-link.active {
+            color: #00f5ff;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border-radius: 1px;
+        }
+        
+        .sql-editor {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sql-editor .CodeMirror {
+            height: 300px;
+            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .sql-editor .CodeMirror-gutters {
+            background: #334155;
+            border-right: 1px solid #475569;
+        }
+        
+        .sql-editor .CodeMirror-linenumber {
+            color: #64748b;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .category-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            border-color: rgba(0, 245, 255, 0.5);
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00f5ff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .sql-editor .CodeMirror {
+                height: 200px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">100</span>
+                    </div>
+                    <h1 class="text-xl font-bold gradient-text">综合练习平台</h1>
+                    <span class="ml-4 text-sm text-gray-300">100道SQL题目</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="practice.html" class="nav-link">SQL训练营</a>
+                    <a href="python-center.html" class="nav-link">Python中心</a>
+                    <a href="#" class="nav-link active">综合练习</a>
+                    <a href="interactive.html" class="nav-link">互动练习</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showHome()" class="btn-secondary px-4 py-2 text-sm">返回首页</button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">👤</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <div class="pt-20 pb-8">
+        <!-- 头部区域 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text mb-4">综合练习平台</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">
+                    100道精心设计的SQL题目，涵盖从基础查询到高级优化的所有知识点。每道题都有详细解析，助您全面掌握SQL技能。
+                </p>
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="stats-grid mb-8">
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="total-questions">100</div>
+                    <div class="text-sm text-gray-300 mt-1">总题目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="completed-questions">0</div>
+                    <div class="text-sm text-gray-300 mt-1">已完成</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="accuracy-rate">0%</div>
+                    <div class="text-sm text-gray-300 mt-1">正确率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold gradient-text" id="total-points">1000</div>
+                    <div class="text-sm text-gray-300 mt-1">总积分</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 难度选择 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">选择难度</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('easy')" id="btn-easy">
+                        <div class="font-semibold text-lg mb-1">初级</div>
+                        <div class="text-sm text-gray-400">基础查询</div>
+                        <div class="text-xs text-gray-500 mt-1">1-33题</div>
+                    </button>
+                    <button class="difficulty-btn btn-secondary py-4 text-center active" onclick="selectDifficulty('medium')" id="btn-medium">
+                        <div class="font-semibold text-lg mb-1">中级</div>
+                        <div class="text-sm text-gray-400">复杂查询</div>
+                        <div class="text-xs text-gray-500 mt-1">34-66题</div>
+                    </button>
+                    <button class="difficulty-btn btn-secondary py-4 text-center" onclick="selectDifficulty('hard')" id="btn-hard">
+                        <div class="font-semibold text-lg mb-1">高级</div>
+                        <div class="text-sm text-gray-400">优化技巧</div>
+                        <div class="text-xs text-gray-500 mt-1">67-100题</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分类筛选 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">按分类筛选</h3>
+                <div class="category-filter" id="category-filter">
+                    <button class="category-btn active" onclick="filterByCategory('all')">全部</button>
+                    <button class="category-btn" onclick="filterByCategory('基础查询')">基础查询</button>
+                    <button class="category-btn" onclick="filterByCategory('条件查询')">条件查询</button>
+                    <button class="category-btn" onclick="filterByCategory('排序')">排序</button>
+                    <button class="category-btn" onclick="filterByCategory('连接查询')">连接查询</button>
+                    <button class="category-btn" onclick="filterByCategory('分组统计')">分组统计</button>
+                    <button class="category-btn" onclick="filterByCategory('子查询')">子查询</button>
+                    <button class="category-btn" onclick="filterByCategory('窗口函数')">窗口函数</button>
+                    <button class="category-btn" onclick="filterByCategory('性能优化')">性能优化</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 题目列表 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">题目列表</h3>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="shuffleQuestions()">随机排序</button>
+                    <button class="btn-primary px-4 py-2 text-sm" onclick="startQuiz()">开始测验</button>
+                </div>
+            </div>
+            
+            <div id="questions-list" class="space-y-4">
+                <!-- 题目将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 题目详情模态框 -->
+    <div id="question-modal" class="modal">
+        <div class="modal-content w-full max-w-4xl">
+            <div id="modal-body">
+                <!-- 题目详情内容 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 测验模式模态框 -->
+    <div id="quiz-modal" class="modal">
+        <div class="modal-content w-full max-w-4xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">测验模式</h3>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-300">题目 <span id="current-question">1</span> / <span id="total-quiz-questions">10</span></span>
+                    <button onclick="closeQuizModal()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+            </div>
+            <div id="quiz-content">
+                <!-- 测验内容 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知组件 -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- 题库文件 -->
+    <script src="sql-questions-100.js"></script>
+    <script src="python-questions.js"></script>
+    
+    <script>
+        // 全局变量
+        let currentQuestions = [];
+        let currentDifficulty = 'medium';
+        let currentCategory = 'all';
+        let currentQuizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizAnswers = [];
+        let userProgress = JSON.parse(localStorage.getItem('sqlProgress') || '{}');
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeParticles();
+            loadQuestions();
+            updateStats();
+        });
+        
+        // 初始化粒子背景
+        function initializeParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // 加载题目
+        function loadQuestions() {
+            let questions = sqlQuestions100.questions;
+            
+            // 按难度筛选
+            if (currentDifficulty !== 'all') {
+                questions = questions.filter(q => q.difficulty === currentDifficulty);
+            }
+            
+            // 按分类筛选
+            if (currentCategory !== 'all') {
+                questions = questions.filter(q => q.category === currentCategory);
+            }
+            
+            currentQuestions = questions;
+            renderQuestions();
+        }
+        
+        // 渲染题目列表
+        function renderQuestions() {
+            const container = document.getElementById('questions-list');
+            container.innerHTML = '';
+            
+            currentQuestions.forEach((question, index) => {
+                const isCompleted = userProgress[question.id];
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card glass-card p-6';
+                questionCard.onclick = () => showQuestionDetail(question);
+                
+                questionCard.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-3">
+                                <span class="inline-block w-8 h-8 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-white text-sm font-bold mr-3">
+                                    ${question.id}
+                                </span>
+                                <h3 class="text-lg font-semibold text-white">${question.title}</h3>
+                                <span class="ml-3 px-2 py-1 rounded-full text-xs ${getDifficultyColor(question.difficulty)}">
+                                    ${getDifficultyText(question.difficulty)}
+                                </span>
+                                <span class="ml-2 px-2 py-1 rounded-full text-xs bg-gray-600 text-gray-200">
+                                    ${question.category}
+                                </span>
+                            </div>
+                            <p class="text-gray-300 mb-4">${question.description}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-sm text-gray-400">
+                                        ${isCompleted ? '✅ 已完成' : '⏳ 未开始'}
+                                    </span>
+                                </div>
+                                <button class="btn-primary px-4 py-2 text-sm" onclick="event.stopPropagation(); startQuestionQuiz(${question.id})">
+                                    开始练习
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(questionCard);
+            });
+        }
+        
+        // 获取难度颜色
+        function getDifficultyColor(difficulty) {
+            const colors = {
+                'easy': 'bg-green-500 text-green-100',
+                'medium': 'bg-yellow-500 text-yellow-100',
+                'hard': 'bg-red-500 text-red-100'
+            };
+            return colors[difficulty] || 'bg-gray-500 text-gray-100';
+        }
+        
+        // 获取难度文本
+        function getDifficultyText(difficulty) {
+            const texts = {
+                'easy': '初级',
+                'medium': '中级',
+                'hard': '高级'
+            };
+            return texts[difficulty] || '未知';
+        }
+        
+        // 选择难度
+        function selectDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn-${difficulty}`).classList.add('active');
+            
+            loadQuestions();
+        }
+        
+        // 按分类筛选
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.trim() === category || (category === 'all' && btn.textContent.trim() === '全部')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            loadQuestions();
+        }
+        
+        // 开始单个题目练习
+        function startQuestionQuiz(questionId) {
+            const question = sqlQuestions100.questions.find(q => q.id === questionId);
+            if (!question) {
+                showNotification('题目不存在', 'error');
+                return;
+            }
+            
+            showQuestionDetail(question);
+        }
+        
+        // 随机排序题目
+        function shuffleQuestions() {
+            currentQuestions = [...currentQuestions].sort(() => Math.random() - 0.5);
+            renderQuestions();
+            showNotification('题目已随机排序', 'success');
+        }
+        
+        // 显示题目详情
+        function showQuestionDetail(question) {
+            const modal = document.getElementById('question-modal');
+            const modalBody = document.getElementById('modal-body');
+            
+            modalBody.innerHTML = `
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold gradient-text">${question.title}</h2>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex items-center mb-4">
+                        <span class="px-3 py-1 rounded-full text-sm ${getDifficultyColor(question.difficulty)}">
+                            ${getDifficultyText(question.difficulty)}
+                        </span>
+                        <span class="ml-3 px-3 py-1 rounded-full text-sm bg-gray-600 text-gray-200">
+                            ${question.category}
+                        </span>
+                    </div>
+                    <p class="text-gray-300 text-lg">${question.description}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">选项：</h3>
+                    <div class="space-y-3">
+                        ${question.options.map((option, index) => `
+                            <div class="glass-card p-4 rounded-lg">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="answer" value="${index}" class="mr-3">
+                                    <span class="text-gray-300">${option}</span>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="submitAnswer(${question.id})" class="btn-primary px-6 py-3">
+                        提交答案
+                    </button>
+                    <button onclick="showExplanation(${question.id})" class="btn-secondary px-6 py-3">
+                        查看解析
+                    </button>
+                    <button onclick="askAIForQuestion(${question.id})" class="btn-secondary px-6 py-3">
+                        🤖 询问AI
+                    </button>
+                </div>
+                
+                <div id="explanation-${question.id}" class="mt-6 p-4 bg-gray-800 rounded-lg hidden">
+                    <h4 class="text-lg font-semibold text-white mb-2">解析：</h4>
+                    <p class="text-gray-300">${question.explanation}</p>
+                    <p class="text-green-400 mt-2">正确答案：${question.options[question.correct]}</p>
+                </div>
+                
+                <div id="ai-answer-${question.id}" class="mt-4 hidden"></div>
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        // 提交答案
+        function submitAnswer(questionId) {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (!selectedAnswer) {
+                showNotification('请选择一个答案', 'error');
+                return;
+            }
+            
+            const question = sqlQuestions100.questions.find(q => q.id === questionId);
+            const isCorrect = parseInt(selectedAnswer.value) === question.correct;
+            
+            // 记录进度
+            userProgress[questionId] = {
+                answered: true,
+                correct: isCorrect,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('sqlProgress', JSON.stringify(userProgress));
+            
+            // 更新选项显示
+            const allOptions = document.querySelectorAll('input[name="answer"]');
+            allOptions.forEach((opt, index) => {
+                const optionDiv = opt.closest('.glass-card');
+                if (index === question.correct) {
+                    optionDiv.classList.add('border-green-500', 'border-2');
+                } else if (index === parseInt(selectedAnswer.value) && !isCorrect) {
+                    optionDiv.classList.add('border-red-500', 'border-2');
+                }
+            });
+            
+            if (isCorrect) {
+                showNotification('回答正确！', 'success');
+            } else {
+                showNotification(`回答错误！正确答案是：${question.options[question.correct]}`, 'error');
+            }
+            
+            updateStats();
+            renderQuestions(); // 刷新题目列表以更新完成状态
+        }
+        
+        // 显示解析
+        function showExplanation(questionId) {
+            const explanation = document.getElementById(`explanation-${questionId}`);
+            explanation.classList.remove('hidden');
+        }
+        
+        // 询问AI
+        async function askAIForQuestion(questionId) {
+            if (typeof AIService === 'undefined') {
+                showNotification('AI服务未加载', 'error');
+                return;
+            }
+            
+            const question = sqlQuestions100.questions.find(q => q.id === questionId);
+            if (!question) {
+                showNotification('题目不存在', 'error');
+                return;
+            }
+            
+            const aiAnswerDiv = document.getElementById(`ai-answer-${questionId}`);
+            aiAnswerDiv.classList.remove('hidden');
+            aiAnswerDiv.innerHTML = '<div class="text-gray-400">AI正在思考中...</div>';
+            
+            try {
+                const prompt = `这是一道SQL题目：
+
+题目：${question.title}
+描述：${question.description}
+选项：
+${question.options.map((opt, idx) => `${String.fromCharCode(65 + idx)}. ${opt}`).join('\n')}
+
+请帮我分析这道题目，解释正确答案，并说明其他选项为什么错误。`;
+                
+                const response = await AIService.chat(prompt);
+                aiAnswerDiv.innerHTML = `
+                    <div class="glass-card p-4 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-lg font-semibold text-white mb-2">🤖 AI分析：</h4>
+                        <div class="text-gray-300 whitespace-pre-wrap">${response}</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('AI请求失败:', error);
+                aiAnswerDiv.innerHTML = `
+                    <div class="glass-card p-4 rounded-lg border-l-4 border-red-500">
+                        <p class="text-red-400">AI服务暂时不可用，请稍后再试。</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 询问AI
+        async function askAIForQuestion(questionId) {
+            if (typeof AIService === 'undefined') {
+                showNotification('AI服务未加载', 'error');
+                return;
+            }
+            
+            const question = sqlQuestions100.questions.find(q => q.id === questionId);
+            if (!question) {
+                showNotification('题目不存在', 'error');
+                return;
+            }
+            
+            const aiAnswerDiv = document.getElementById(`ai-answer-${questionId}`);
+            aiAnswerDiv.classList.remove('hidden');
+            aiAnswerDiv.innerHTML = '<div class="text-gray-400">AI正在思考中...</div>';
+            
+            try {
+                const prompt = `这是一道SQL题目：
+
+题目：${question.title}
+描述：${question.description}
+选项：
+${question.options.map((opt, idx) => `${String.fromCharCode(65 + idx)}. ${opt}`).join('\n')}
+
+请帮我分析这道题目，解释正确答案，并说明其他选项为什么错误。`;
+                
+                const response = await AIService.chat(prompt);
+                aiAnswerDiv.innerHTML = `
+                    <div class="glass-card p-4 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-lg font-semibold text-white mb-2">🤖 AI分析：</h4>
+                        <div class="text-gray-300 whitespace-pre-wrap">${response}</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('AI请求失败:', error);
+                aiAnswerDiv.innerHTML = `
+                    <div class="glass-card p-4 rounded-lg border-l-4 border-red-500">
+                        <p class="text-red-400">AI服务暂时不可用，请稍后再试。</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 开始测验
+        function startQuiz() {
+            if (currentQuestions.length === 0) {
+                showNotification('当前没有题目', 'error');
+                return;
+            }
+            
+            // 随机选择10道题
+            currentQuizQuestions = [...currentQuestions].sort(() => Math.random() - 0.5).slice(0, Math.min(10, currentQuestions.length));
+            currentQuizIndex = 0;
+            quizAnswers = [];
+            
+            showQuizQuestion();
+            document.getElementById('quiz-modal').classList.add('active');
+        }
+        
+        // 显示测验题目
+        function showQuizQuestion() {
+            const question = currentQuizQuestions[currentQuizIndex];
+            const quizContent = document.getElementById('quiz-content');
+            
+            document.getElementById('current-question').textContent = currentQuizIndex + 1;
+            document.getElementById('total-quiz-questions').textContent = currentQuizQuestions.length;
+            
+            quizContent.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center mb-4">
+                        <span class="px-3 py-1 rounded-full text-sm ${getDifficultyColor(question.difficulty)}">
+                            ${getDifficultyText(question.difficulty)}
+                        </span>
+                        <span class="ml-3 px-3 py-1 rounded-full text-sm bg-gray-600 text-gray-200">
+                            ${question.category}
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-4">${question.title}</h3>
+                    <p class="text-gray-300 text-lg mb-6">${question.description}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="space-y-3">
+                        ${question.options.map((option, index) => `
+                            <div class="glass-card p-4 rounded-lg">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="quiz-answer" value="${index}" class="mr-3">
+                                    <span class="text-gray-300">${option}</span>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <button onclick="previousQuizQuestion()" class="btn-secondary px-6 py-3" ${currentQuizIndex === 0 ? 'disabled' : ''}>
+                        上一题
+                    </button>
+                    <button onclick="nextQuizQuestion()" class="btn-primary px-6 py-3">
+                        ${currentQuizIndex === currentQuizQuestions.length - 1 ? '完成测验' : '下一题'}
+                    </button>
+                </div>
+            `;
+        }
+        
+        // 下一题
+        function nextQuizQuestion() {
+            const selectedAnswer = document.querySelector('input[name="quiz-answer"]:checked');
+            if (!selectedAnswer) {
+                showNotification('请选择一个答案', 'error');
+                return;
+            }
+            
+            const question = currentQuizQuestions[currentQuizIndex];
+            const isCorrect = parseInt(selectedAnswer.value) === question.correct;
+            
+            quizAnswers.push({
+                questionId: question.id,
+                answer: parseInt(selectedAnswer.value),
+                correct: isCorrect
+            });
+            
+            if (currentQuizIndex < currentQuizQuestions.length - 1) {
+                currentQuizIndex++;
+                showQuizQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        // 上一题
+        function previousQuizQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                quizAnswers.pop(); // 移除上一题的答案
+                showQuizQuestion();
+            }
+        }
+        
+        // 完成测验
+        function finishQuiz() {
+            const correctCount = quizAnswers.filter(a => a.correct).length;
+            const totalCount = quizAnswers.length;
+            const score = Math.round((correctCount / totalCount) * 100);
+            
+            const quizContent = document.getElementById('quiz-content');
+            quizContent.innerHTML = `
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold gradient-text mb-4">测验完成！</h3>
+                    <div class="text-6xl font-bold gradient-text mb-4">${score}%</div>
+                    <p class="text-gray-300 text-lg mb-6">
+                        您答对了 ${correctCount} / ${totalCount} 道题
+                    </p>
+                    <div class="space-y-4">
+                        ${quizAnswers.map((answer, index) => {
+                            const question = currentQuizQuestions[index];
+                            return `
+                                <div class="glass-card p-4 rounded-lg text-left">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-semibold text-white">第${index + 1}题</span>
+                                        <span class="px-2 py-1 rounded-full text-sm ${answer.correct ? 'bg-green-500 text-green-100' : 'bg-red-500 text-red-100'}">
+                                            ${answer.correct ? '正确' : '错误'}
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm mt-2">${question.title}</p>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <button onclick="closeQuizModal()" class="btn-primary px-8 py-3 mt-6">
+                        完成
+                    </button>
+                </div>
+            `;
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const totalQuestions = sqlQuestions100.questions.length;
+            const completedQuestions = Object.keys(userProgress).filter(id => userProgress[id].answered).length;
+            const correctAnswers = Object.values(userProgress).filter(p => p.correct).length;
+            const accuracy = completedQuestions > 0 ? Math.round((correctAnswers / completedQuestions) * 100) : 0;
+            
+            // 计算总积分（每道题10分）
+            const totalPoints = correctAnswers * 10;
+            
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('completed-questions').textContent = completedQuestions;
+            document.getElementById('accuracy-rate').textContent = accuracy + '%';
+            document.getElementById('total-points').textContent = totalPoints;
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('question-modal').classList.remove('active');
+        }
+        
+        // 关闭测验模态框
+        function closeQuizModal() {
+            document.getElementById('quiz-modal').classList.remove('active');
+        }
+        
+        // 返回首页
+        function showHome() {
+            window.location.href = 'index.html';
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('question-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        document.getElementById('quiz-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQuizModal();
+            }
+        });
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+            updateStats();
+        });
+        
+        // 题库文件引入（确保在DOM加载后可用）
+        if (typeof sqlQuestions100 === 'undefined') {
+            console.error('SQL题库未加载');
+            showNotification('题库加载失败，请刷新页面', 'error');
+        }
+        
+        if (typeof pythonQuestions === 'undefined') {
+            console.error('Python题库未加载');
+            showNotification('Python题库加载失败，请刷新页面', 'error');
+        }
+    </script>
+    
+    <!-- AI 助手（全站通用） -->
+    <script src="ai-service.js"></script>
+    <script src="ai-assistant.js"></script>
+    
+    <!-- 题库文件 -->
+    <script src="sql-questions-100.js"></script>
+    <script src="python-questions.js"></script>
+</body>
+</html>
